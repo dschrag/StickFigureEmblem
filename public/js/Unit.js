@@ -1,13 +1,23 @@
 
-
+/*
+   Unit Class documentation
+   Written by:
+        Daniel Miller (dmiller4991@gmail.com)
+   Variables:
+        var health; 
+	    var baseDamage;
+	    var critDamage; 
+	    var unitClass;
+        var unitModel;
+        var isDead: flag for checking if the unit is dead. 
+   Functions:
+        void setModel(Model model); 
+        void combat(UNIT unit1, UNIT unit2, bool counter); 
+        bool crictical(attacker, defender); 
+        void destroyUnit();
+*/
 function Unit(unitClass) {
-    /*
-    var health; 
-	var baseDamage;
-	var critDamage; 
-	var unitClass;
-    var isDead: flag for checking if the unit is dead. 
-    */
+    
     this.unitClass = unitClass;
     this.isDead = false;
     if (unitClass == "warrior" || unitClass == "Warrior") {

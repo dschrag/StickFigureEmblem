@@ -6,15 +6,17 @@
     <link rel=stylesheet href="css/base.css" />
 </head>
 <body>
-    <script src="js/three.min.js"></script>
-    <script src="js/Three.js"></script>
-    <script src="js/Detector.js"></script>
-    <script src="js/Stats.js"></script>
-    <script src="js/OrbitControls.js"></script>
-    <script src="js/KeyboardState.js"></script>
-    <script src="js/THREEx.FullScreen.js"></script>
-    <script src="js/THREEx.WindowResize.js"></script>
+    <script type="text/javascript" src="js/three.min.js"></script>
+    <script type="text/javascript" src="js/Three.js"></script>
+    <script type="text/javascript" src="js/Detector.js"></script>
+    <script type="text/javascript" src="js/Stats.js"></script>
+    <script type="text/javascript" src="js/OrbitControls.js"></script>
+    <script type="text/javascript" src="js/KeyboardState.js"></script>
+    <script type="text/javascript" src="js/THREEx.FullScreen.js"></script>
+    <script type="text/javascript" src="js/THREEx.WindowResize.js"></script>
+   
     <script type="text/javascript" src="js/Unit.js"></script>
+    <script type="text/javascript" src="js/Player.js"></script>
 
 
     <script src="js/jquery-1.9.1.js"></script>
@@ -46,8 +48,13 @@
         var unitIndex = 0;
 
         init();
+
+        assignUnits();
+
         animate();
 
+        
+        
         // initializing stuff
         function init()
         {
@@ -124,17 +131,35 @@
 
             // loading in initial models.
             var jsonloader = new THREE.JSONLoader();
-            jsonloader.load("models/stickfigurewarrior.json", addModelToScene);
-            console.log("Unit array length " + unitArray.length);
-            console.log("Unit index: " + unitIndex);
+            for (i = 0; i < 2; i++)
+            {
+                jsonloader.load("models/stickfigurewarrior.json", addModelToScene);
 
-            jsonloader.load("models/stickfiguremage.json", addModelToScene);
+                jsonloader.load("models/stickfiguremage.json", addModelToScene);
 
-            jsonloader.load("models/stickfigureranger.json", addModelToScene);
-            //targetlist[2].unit = new Unit("ranger");
-            console.log("Number of models " + targetlist.length);
+                jsonloader.load("models/stickfigureranger.json", addModelToScene);
+            }
             document.addEventListener('mousedown', eventClicked, false);
-            console.log("CurrentModel " + currentModel);
+        }
+
+        // adding models
+        function addModelToScene(geometry, materials) {
+            var tempArray = new Array;
+            var material = new THREE.MeshFaceMaterial(materials);
+            models[modelIndex] = new THREE.Mesh(geometry, material);
+            models[modelIndex].scale.set(10, 10, 10);
+            // 25 and 20 are the magic numbers that set the units in the proper positions.
+            models[modelIndex].position.set(25 + posx, 0 + posy, 25 + posz);
+            var unit = new Unit("warrior");
+            unit.setModel(models[modelIndex]);
+            unitArray.push(unit);
+            unitIndex++;
+            targetlist.push(models[modelIndex]);
+            scene.add(models[modelIndex]);
+            modelIndex++;
+            posx += 50
+            posz += 50;
+
         }
 
         function eventClicked(event)
@@ -166,32 +191,13 @@
             {
                 console.log("clicked on something else");
             }
-            console.log("CurrentModel after init " + currentModel);
-        }
-
-        // adding models
-        function addModelToScene(geometry, materials)
-        {
-            var material = new THREE.MeshFaceMaterial(materials);
-            models[modelIndex] = new THREE.Mesh(geometry, material);
-            models[modelIndex].scale.set(10, 10, 10);
-            // 25 and 20 are the magic numbers that set the units in the proper positions.
-            models[modelIndex].position.set(25 + posx, 0 + posy, 25 + posz);
-            var unit = new Unit("warrior");
-            unit.setModel(models[modelIndex]);
-            unitArray.push(unit)
-            unitIndex++;
-            targetlist.push(models[modelIndex]);
-            scene.add(models[modelIndex]);
-            modelIndex++;
-            posx += 100;
-            posz += 100;
 
         }
 
         // will do our rendering.
         function animate()
         {
+            //log();
             requestAnimationFrame(animate);
             render();
             update();
@@ -209,8 +215,19 @@
             {
                 // do something
             }
-            controls.update();
+
             //stats.update();
+        }
+
+        function log() {
+            console.log("targetList.length: " + targetlist.length);
+            console.log("Unit array length logged: " + unitArray.length);
+            console.log("Unit index logged: " + unitIndex);
+        }
+
+        function assignUnits()
+        {
+
         }
 
     </script>
