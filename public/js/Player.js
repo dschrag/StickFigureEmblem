@@ -4,26 +4,28 @@ Written by:
     Daniel Miller (dmiller4991@gmail.com)
 
 Variables:
+    int playerNum
     Array<Units> unitArray;
-    int unitNum; number of units alive. 
+    int unitNum; number of units alive (add one if it's really needed)
     int playerNum; Number to denote either player one or player 2. 
     int score;
+    bool winner; will initially set to false to determine that no-one has achieved winning state. 
 Functions:
     void addUnits;
     void removeUnits
     void sendScore;
+    void calculateScore;
 */
 function Player (number)
 {
     this.playerNum = number;
     this.score = 0;
     this.unitArray = new Array;
-    this.unitNum = 0;
+    this.winner = false 
 
     this.addUnits = function (unit)
     {
         this.unitArray.push(unit);
-        this.unitNum++;
     }
 
     this.removeUnits = function (unit)
@@ -35,6 +37,11 @@ function Player (number)
                 this.unitArray.splice(i, 1);
             }
         }
+    }
+
+    this.caclulateScore = function ()
+    {
+
     }
     this.sendScore = function()
     {

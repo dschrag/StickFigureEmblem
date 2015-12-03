@@ -9,7 +9,7 @@
 	    var critDamage; 
 	    var unitClass;
         var unitModel;
-        var isDead: flag for checking if the unit is dead. 
+        var isDead; flag for checking if the unit is dead. 
    Functions:
         void setModel(Model model); 
         void combat(UNIT unit1, UNIT unit2, bool counter); 

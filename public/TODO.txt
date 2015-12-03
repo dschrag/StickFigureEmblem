@@ -1,17 +1,25 @@
 CLIENT TODO:
 ------------------
 Models
-- Blender could be a great tool to use to make our models
-- Blender has a feature that exports to Three.js so we dont' have to worry about that
-- Blender is open source. 
-- Somehow incorporate the Unit Class into the models
+- Blender used for models.  
 - Animate the following things 
-	- Attacking (Needed)
-	- Movement (Needed)
-	- Victory (Optional)
-	- Defeat (Optional ?)
-- Add models to the board. 
+	- Attacking (Optional? Replace with GUI)
+	- Movement (Needed) The most basic as possbile. 
+	- Victory (Optional? Replace with GUI)
+	- Defeat (Optional? Replace with GUI)
 
 Unit Class
-- Need to find a way to do effectively move units across the board. 
+- Need to find a way to do effectively move units across the board.
+- Add Movement and attack ranges. 
+	- Attack range maybe use the postion of mouse to calculate or add a marker where valid? 
+	- Sqaures are 50 units apart. 
+	- Sweet spots
+		- x: last digits 75 or 25
+		- y: 0
+		- z: last digits 75 or 25 
 
+GUI
+- Places GUIs can go
+	- Unit Menus
+	- Display Attack/ Movement range. 
+	- Display Attack/ Counter actions?
