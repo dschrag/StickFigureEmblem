@@ -49,11 +49,10 @@
 
         var Player1, Player2;
         var assignBool = false;
+        var setBoard = false;
         var timeout = false; 
 
         init();
-
-        //assignUnits();
 
         animate();
 
@@ -143,6 +142,7 @@
 
                 jsonloader.load("models/stickfigureranger.json", addModelToScene);
             }
+
             document.addEventListener('mousedown', eventClicked, false);
         }
 
@@ -228,7 +228,11 @@
                     console.log("Unit class at " + i + " is " + unitArray[i].unitClass);
                 }
             }
-
+            if (assignBool && !setBoard)
+            {
+                setGameBoard(); 
+            }
+            controls.update();
             //stats.update();
         }
 
@@ -269,6 +273,16 @@
             }
             assignBool = true;
         }
+
+        function setGameBoard()
+        {
+
+            Player1.unitArray[0].unitModel.position.set(-300, 0, -300);
+            Player1.unitArray[1].unitModel.position.set(-200, 0, -300);
+            Player1.unitArray[2].unitModel.position.set(-100, 0, -300);
+            setBoard = true;
+        }
+        
 
     </script>
 </body>
