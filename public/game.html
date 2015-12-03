@@ -44,12 +44,16 @@
 
         var projector, mouse = {x: 0, y: 0};
         var targetlist = [];
-        var unitArray = new Array;
+        var unitArray = [];
         var unitIndex = 0;
+
+        var Player1, Player2;
+        var assignBool = false;
+        var timeout = false; 
 
         init();
 
-        assignUnits();
+        //assignUnits();
 
         animate();
 
@@ -197,11 +201,10 @@
         // will do our rendering.
         function animate()
         {
-            //log();
             requestAnimationFrame(animate);
             render();
             update();
-
+                
         }
 
         function render()
@@ -215,6 +218,16 @@
             {
                 // do something
             }
+            if (!assignBool)
+                log();
+            if (unitArray.length >= 6 && !assignBool) {
+                assignUnits();
+                console.log("Showing unit classes")
+                for (i = 0; i < unitArray.length; i++)
+                {
+                    console.log("Unit class at " + i + " is " + unitArray[i].unitClass);
+                }
+            }
 
             //stats.update();
         }
@@ -227,7 +240,34 @@
 
         function assignUnits()
         {
-
+            Player1 = new Player(1);
+            Player2 = new Player(2);
+            for (i = 0; i <= 2; i++) {
+                console.log("current i: " + i);
+                var tempUnit = unitArray[i];
+                var tempUnit2 = unitArray[i + 3];
+                console.log("tempUnit: " + tempUnit);
+                console.log("tempUnit: " + tempUnit2);
+                if (i % 3 == 0){
+                    tempUnit.unitClass = "warrior";
+                    tempUnit.unitClass = "warrior";
+                }
+                else if (i % 3 == 1){
+                    tempUnit.unitClass = "mage";
+                    tempUnit2.unitClass = "mage";
+                }
+                else {
+                    if (i % 3 == 2){
+                        tempUnit.unitClass = "ranger";
+                        tempUnit2.unitClass = "ranger";
+                    }
+                }
+                unitArray[i].unitClass 
+                Player1.addUnits(unitArray[i]);
+                Player2.addUnits(unitArray[i + 3]);
+                console.log("done");
+            }
+            assignBool = true;
         }
 
     </script>
