@@ -56,8 +56,6 @@
 
         animate();
 
-        
-        
         // initializing stuff
         function init()
         {
@@ -277,9 +275,12 @@
         function setGameBoard()
         {
 
-            Player1.unitArray[0].unitModel.position.set(-300, 0, -300);
-            Player1.unitArray[1].unitModel.position.set(-200, 0, -300);
-            Player1.unitArray[2].unitModel.position.set(-100, 0, -300);
+            Player1.unitArray[0].unitModel.position.set(-475, 0, -475);
+            Player1.unitArray[1].unitModel.position.set(-375, 0, -475);
+            Player1.unitArray[2].unitModel.position.set(-275, 0, -475);
+            Player2.unitArray[0].unitModel.position.set(275, 0, 475);
+            Player2.unitArray[1].unitModel.position.set(375, 0, 475);
+            Player2.unitArray[2].unitModel.position.set(475, 0, 475);
             setBoard = true;
         }
         
