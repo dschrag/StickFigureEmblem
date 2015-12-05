@@ -29,6 +29,18 @@
     <div id="ThreeJS" style="position: absolute; left:0px; top:0px"></div>
 
     <script>
+
+        /*
+            Stick Figure Emblem Game client
+            Purdue CS252 Final Project. Fall 2015
+            Author:
+                Daniel Miller (dmiller4991@gmail.com)
+            
+            This is the HTML that houses all of the back end calculations
+            and does all of the THREE.js manipulation of OpenGL. 
+            Models made in Blender, open source 3D modeling.
+            
+        */
         // main
         var container, scene, camera, renderer, mesh, controls;
         var models = new Array();
@@ -193,7 +205,7 @@
             {
                 // part of the target list of units.
                 console.log("Clicked a model");
-                currentModel = intersections[0].object;
+                currentModel = intersections[0].object; // grabbing the actual object
                 console.log("currentModel position x: " + currentModel.position.x);
                 console.log("currentModel position z: " + currentModel.position.z);
                 
@@ -224,9 +236,11 @@
 
         function update()
         {
-            walking = false;
+            // big function that is called to do all of the back end stuff.
+            // Handles movement, game setup, and (eventually) turn play.
             var currentPosition; 
             if (unitArray.length >= 6 && !assignBool) {
+                // assigning units to players. 
                 log();
                 assignUnits();
                 console.log("Showing unit classes")
@@ -238,6 +252,7 @@
             }
             if (assignBool && !setBoard)
             {
+                // setting up initial game state. 
                 log();
                 setGameBoard();
             }
