@@ -11,7 +11,7 @@
     <script type="text/javascript" src="js/Detector.js"></script>
     <script type="text/javascript" src="js/Stats.js"></script>
     <script type="text/javascript" src="js/OrbitControls.js"></script>
-    <script type="text/javascript" src="js/KeyboardState.js"></script>
+    <script type="text/javascript" src="js/THREEx.KeyboardState.js"></script>
     <script type="text/javascript" src="js/THREEx.FullScreen.js"></script>
     <script type="text/javascript" src="js/THREEx.WindowResize.js"></script>
    
@@ -39,18 +39,29 @@
         var posy = 0;
         var posz = 0;
 
-        var keyboard = new KeyboardState();
         var clock = new THREE.Clock();
-
+        var keyboard = new THREEx.KeyboardState();
         var projector, mouse = {x: 0, y: 0};
+
         var targetlist = [];
         var unitArray = [];
         var unitIndex = 0;
 
         var Player1, Player2;
+
+        // control boolean flags
         var assignBool = false;
         var setBoard = false;
-        var timeout = false; 
+        var timeout = false;
+
+        //basic movement variables. 
+        var animOffset = 0;   // starting frame of animation
+        var walking = false;
+        var duration = 1000; //milliseconds to complete animation
+        var keyframes = 20;   // total number of animation frames
+        var interpolation = duration / keyframes; // milliseconds per frame
+        var lastKeyframe = 0;    // previous keyframe
+	    var currentKeyframe = 0;
 
         init();
 
@@ -150,8 +161,8 @@
             var material = new THREE.MeshFaceMaterial(materials);
             models[modelIndex] = new THREE.Mesh(geometry, material);
             models[modelIndex].scale.set(10, 10, 10);
-            // 25 and 20 are the magic numbers that set the units in the proper positions.
-            models[modelIndex].position.set(25 + posx, 0 + posy, 25 + posz);
+            // 25 is the magic number that sets the units in the proper positions.
+            models[modelIndex].position.set(25, 0, 25);
             var unit = new Unit("warrior");
             unit.setModel(models[modelIndex]);
             unitArray.push(unit);
@@ -159,8 +170,6 @@
             targetlist.push(models[modelIndex]);
             scene.add(models[modelIndex]);
             modelIndex++;
-            posx += 50
-            posz += 50;
 
         }
 
@@ -171,7 +180,6 @@
             // update "mouse"
             mouse.x = (event.clientX / innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / innerHeight) * 2 + 1;
-
             //finding interactions
             var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
             projector.unprojectVector(vector, camera);
@@ -183,10 +191,11 @@
             {
                 // part of the target list of units.
                 console.log("Clicked a model");
-                currentModel = intersections[0];
-
+                currentModel = intersections[0].object;
+                console.log("currentModel position x: " + currentModel.position.x);
+                console.log("currentModel position z: " + currentModel.position.z);
+                
                 // spawn GUI here
-
 
             }
             else
@@ -212,29 +221,44 @@
 
         function update()
         {
-            if (keyboard.pressed("z"))
-            {
-                // do something
-            }
-            if (!assignBool)
-                log();
+            walking = false;
+            
             if (unitArray.length >= 6 && !assignBool) {
+                log();
                 assignUnits();
                 console.log("Showing unit classes")
                 for (i = 0; i < unitArray.length; i++)
                 {
                     console.log("Unit class at " + i + " is " + unitArray[i].unitClass);
+                    console.log("Unit owner at " + i + " is " + unitArray[i].pOwner);
                 }
             }
             if (assignBool && !setBoard)
             {
-                setGameBoard(); 
+                log();
+                setGameBoard();
             }
+
+            if (keyboard.pressed("down") && currentModel != undefined)
+            {
+                console.log("Trying to move object " + currentModel);
+                console.log("selected obejct is of type " + typeof(currentModel))
+                currentModel.position.z += 50;
+            }
+                
+
+            var movementKeys = ["up", "down", "left", "right"];
+            for (i = 0; i < movementKeys.length; i++)
+            {
+                if (keyboard.pressed(movementKeys[i]))
+                    walking = true;
+            }
+
             controls.update();
             //stats.update();
         }
 
-        function log() {
+        function log() {    
             console.log("targetList.length: " + targetlist.length);
             console.log("Unit array length logged: " + unitArray.length);
             console.log("Unit index logged: " + unitIndex);
@@ -264,7 +288,8 @@
                         tempUnit2.unitClass = "ranger";
                     }
                 }
-                unitArray[i].unitClass 
+                unitArray[i].pOwner = Player1.playerNum;
+                unitArray[i+3].pOwner = Player2.playerNum;
                 Player1.addUnits(unitArray[i]);
                 Player2.addUnits(unitArray[i + 3]);
                 console.log("done");

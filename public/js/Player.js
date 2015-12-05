@@ -7,7 +7,7 @@ Variables:
     int playerNum
     Array<Units> unitArray;
     int unitNum; number of units alive (add one if it's really needed)
-    int playerNum; Number to denote either player one or player 2. 
+    int playerNum; Number to denote either player 1 or player 2. 
     int score;
     bool winner; will initially set to false to determine that no-one has achieved winning state. 
 Functions:

@@ -9,7 +9,8 @@
 	    var critDamage; 
 	    var unitClass;
         var unitModel;
-        var isDead; flag for checking if the unit is dead. 
+        var isDead; flag for checking if the unit is dead
+        var pOwner; Player who owns it. Denoted by 0 (no one), 1 (player 1), or 2 (player2) 
    Functions:
         void setModel(Model model); 
         void combat(UNIT unit1, UNIT unit2, bool counter); 
@@ -19,6 +20,7 @@
 function Unit(unitClass) {
     
     this.unitClass = unitClass;
+    this.pOwner = 0; // initalize it to 0 at first. It'll be changed when the game starts. 
     this.isDead = false;
     if (unitClass == "warrior" || unitClass == "Warrior") {
         // Warrior specific attributes. 
