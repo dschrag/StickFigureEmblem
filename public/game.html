@@ -61,7 +61,9 @@
         var keyframes = 20;   // total number of animation frames
         var interpolation = duration / keyframes; // milliseconds per frame
         var lastKeyframe = 0;    // previous keyframe
-	    var currentKeyframe = 0;
+        var currentKeyframe = 0;
+        var movementKeys = ["up", "down", "left", "right"]; // four cardinal directions 
+        var forbidKeys = [false, false, false, false] // prevent from keeping moving until you do something different.
 
         init();
 
@@ -201,6 +203,7 @@
             else
             {
                 console.log("clicked on something else");
+                currentModel = undefined;
             }
 
         }
@@ -222,7 +225,7 @@
         function update()
         {
             walking = false;
-            
+            var currentPosition; 
             if (unitArray.length >= 6 && !assignBool) {
                 log();
                 assignUnits();
@@ -239,19 +242,74 @@
                 setGameBoard();
             }
 
+
+            // keyboard events. 
             if (keyboard.pressed("down") && currentModel != undefined)
             {
-                console.log("Trying to move object " + currentModel);
-                console.log("selected obejct is of type " + typeof(currentModel))
-                currentModel.position.z += 50;
+                clearForbidKeys("down")
+                currentPosition = currentModel.position; 
+                if (!(currentModel.position.z <= -475))
+                {
+                    var check = checkForUnits("down", currentPosition);
+                    if (!check || forbidKeys[0])
+                        console.log("cannot stand on unit")
+                    else 
+                        currentModel.position.z -= 25;
+                }
+                else 
+                    console.log("hit lower bound")
             }
-                
 
-            var movementKeys = ["up", "down", "left", "right"];
-            for (i = 0; i < movementKeys.length; i++)
+            if (keyboard.pressed("up") && currentModel != undefined)
             {
-                if (keyboard.pressed(movementKeys[i]))
-                    walking = true;
+                clearForbidKeys("up");
+                currentPosition = currentModel.position;
+                if (currentModel.position.z >= 475)
+                    console.log("hit upper boundary.")
+                else
+                {
+                    var check = checkForUnits("up", currentPosition);
+                    if (!check || forbidKeys[1])
+                    {
+                        console.log("Cannot Stand on Unit")
+                    }
+                    else 
+                        currentModel.position.z += 25;
+                }
+                    
+            }
+
+            if (keyboard.pressed("left") && currentModel != undefined)
+            {
+                clearForbidKeys("left");
+                currentPosition = currentModel.position;
+                if (currentModel.position.x >= 475)
+                    console.log("hit left boundary");
+                else
+                {
+                    var check = checkForUnits("left", currentPosition);
+                    if (!check || forbidKeys[2])
+                    {
+                        console.log("Cannot stand on unit")
+                    }
+                    else 
+                        currentModel.position.x += 25;
+                }
+            }
+
+            if (keyboard.pressed("right") && currentModel != undefined) {
+                clearForbidKeys("right")
+                currentPosition = currentModel.position;
+                if (currentModel.position.x <= -475)
+                    console.log("hit right boundary");
+                else
+                {
+                    var check = checkForUnits("right", currentPosition);
+                    if (!check || forbidKeys[3])
+                        console.log("Cannot stand on unit");
+                    else 
+                        currentModel.position.x -= 25;
+                }    
             }
 
             controls.update();
@@ -309,6 +367,69 @@
             setBoard = true;
         }
         
+        function checkForUnits(direction, position)
+        {
+            for (i =0 ; i < unitArray.length; i++)
+            {
+                var unitModel = unitArray[i].unitModel;
+                console.log("unit " + i + " x: " + unitModel.position.x);
+                console.log("unit " + i + " z: " + unitModel.position.z);
+                console.log("current unit x: " + currentModel.position.x);
+                console.log("current unit z: " + currentModel.position.z);
+                if (direction == "left")
+                {
+                    if ((currentModel.position.x + 25) == unitModel.position.x
+                        && currentModel.position.z == unitModel.position.z)
+                    {
+                        console.log("Unit " + i + " on the left!!!")
+                        currentModel.position.set(position.x-25, position.y, position.z)
+                        forbidKeys[2] = true; 
+                        return false; 
+                    }
+                }
+                if (direction == "right")
+                {
+                    if ((currentModel.position.x - 25) == unitModel.position.x
+                        && currentModel.position.z == unitModel.position.z) {
+                        console.log("Unit " + i + " on the right!!!")
+                        currentModel.position.set(position.x + 25, position.y, position.z)
+                        forbidKeys[3] = true;
+                        return false;
+                    }
+                }
+                if (direction == "up")
+                {
+                    if (currentModel.position.x == unitModel.position.x
+                        && (currentModel.position.z + 25)== unitModel.position.z) {
+                        console.log("Unit " + i + " on the top!!!")
+                        currentModel.position.set(position.x, position.y, position.z - 25)
+                        forbidKeys[1] = true;
+                        return false;
+                    }
+                }
+                if (direction == "down")
+                {
+                    if (currentModel.position.x == unitModel.position.x
+                        && (currentModel.position.z - 25) == unitModel.position.z) {
+                        console.log("Unit " + i + " on the bottom!!!")
+                        currentModel.position.set(position.x, position.y, position.z + 25)
+                        forbidKeys[0] = true;
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+        function clearForbidKeys(direction)
+        {
+            for (i = 0; i < 4; i++)
+            {
+                if (movementKeys[i] == direction)
+                    continue;
+                else 
+                    forbidKeys[i] = false;
+            }
+        }
 
     </script>
 </body>
