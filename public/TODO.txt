@@ -4,12 +4,10 @@ Models
 - Blender used for models.  
 - Animate the following things 
 	- Attacking (Optional? Replace with GUI)
-	- Movement (Needed) The most basic as possbile. 
 	- Victory (Optional? Replace with GUI)
 	- Defeat (Optional? Replace with GUI)
 
 Unit Class
-- Need to find a way to do effectively move units across the board.
 - Add Movement and attack ranges. 
 	- Attack range maybe use the postion of mouse to calculate or add a marker where valid? 
 	- Sqaures are 50 units apart. 
