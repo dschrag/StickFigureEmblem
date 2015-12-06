@@ -14,6 +14,7 @@
     <script type="text/javascript" src="js/THREEx.KeyboardState.js"></script>
     <script type="text/javascript" src="js/THREEx.FullScreen.js"></script>
     <script type="text/javascript" src="js/THREEx.WindowResize.js"></script>
+    <script type="text/javascript" src="js/DAT.GUI.min.js"></script>
    
     <script type="text/javascript" src="js/Unit.js"></script>
     <script type="text/javascript" src="js/Player.js"></script>
@@ -80,6 +81,8 @@
         // GUI stuff
         var turnGUI; // GUI denoting player turn. 
         var unitGUI; // GUI showing when currentModel isn't undefined and it's the proper player.
+
+       
 
         init();
 
@@ -214,7 +217,10 @@
                 console.log("currentModel position z: " + currentModel.position.z);
                 
                 // spawn GUI here
-                
+                if(i==1)
+                {
+
+                }
             }
             else
             {
@@ -345,6 +351,17 @@
         {
             Player1 = new Player(1);
             Player2 = new Player(2);
+
+            // spawn turn tracker GUI
+            turnGUI = new dat.GUI();
+            var text = {
+                player: Player1.playerNum,
+                endTurn: function () { newTurn();}
+            }
+            turnGUI.add(text, 'player').name('Current Player');
+            turnGUI.add(text, 'endTurn').name('End Turn');
+
+            // assigning unita
             for (i = 0; i <= 2; i++) {
                 console.log("current i: " + i);
                 var tempUnit = unitArray[i];
@@ -392,7 +409,16 @@
             if (currentPlayer == Player1)
                 currentPlayer = Player2; 
             else 
-                currentPlayer = Player1; 
+                currentPlayer = Player1;
+
+            turnGUI.destroy();
+            turnGUI = new dat.GUI();
+            var text = {
+                player: currentPlayer.playerNum,
+                endTurn: function () { newTurn(); }
+            }
+            turnGUI.add(text, 'player').name('Current Player');
+            turnGUI.add(text, 'endTurn').name('End Turn')
 
         }
         
