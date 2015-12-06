@@ -217,14 +217,54 @@
                 console.log("currentModel position z: " + currentModel.position.z);
                 
                 // spawn GUI here
-                if(i==1)
+                if(currentModel != undefined)
                 {
+                    var currentUnit = searchModel();
 
+                    if (currentUnit != null)
+                    {
+                        console.log("unitGUI: " + unitGUI);
+                        if (unitGUI != undefined)
+                            unitGUI.destroy();
+                        console.log("unitGUI2: " + unitGUI);
+                        unitGUI = new dat.GUI();
+                        if (currentUnit.pOwner == currentPlayer.playerNum)
+                        {
+                            var text = {
+                                unitClass: currentUnit.unitClass,
+                                health: currentUnit.health,
+                                owner: currentUnit.pOwner,
+                                move: function () { console.log("moving stuff"); currentPlayer.move(currentUnit)},
+                                attack: function () { console.log("attacking stuff"); currentPlayer.attack(currentUnit) },
+                            };
+                            unitGUI.add(text, 'health').name("Health");
+                            unitGUI.add(text, 'unitClass').name("Class");
+                            unitGUI.add(text, 'owner').name("Owner");
+                            unitGUI.add(text, 'move').name("Move");
+                            unitGUI.add(text, 'attack').name("Attack");
+                        }
+                        else
+                        {
+                            var text = {
+                                unitClass: currentUnit.unitClass,
+                                health: currentUnit.health,
+                                owner: currentUnit.pOwner
+                            };
+                            unitGUI.add(text, 'health').name("Health");
+                            unitGUI.add(text, 'unitClass').name("Class");
+                            unitGUI.add(text, 'owner').name("Owner");
+                        }
+                    }
+                    else {
+                        console.log("unit not found");
+                    }
                 }
             }
             else
             {
                 console.log("clicked on something else");
+                console.log("unitGUI: " + unitGUI);
+                unitGUI.close();
                 currentModel = undefined;
             }
 
@@ -347,6 +387,18 @@
             console.log("Unit index logged: " + unitIndex);
         }
 
+        function searchModel()
+        {
+            var searchkey = currentModel.position;
+            for (i = 0; i < unitArray.length; i++)
+            {
+                if (searchkey == unitArray[i].unitModel.position)
+                    return unitArray[i];
+
+            }
+            return null;
+        }
+
         function assignUnits()
         {
             Player1 = new Player(1);
@@ -361,7 +413,7 @@
             turnGUI.add(text, 'player').name('Current Player');
             turnGUI.add(text, 'endTurn').name('End Turn');
 
-            // assigning unita
+            // assigning units
             for (i = 0; i <= 2; i++) {
                 console.log("current i: " + i);
                 var tempUnit = unitArray[i];
@@ -413,6 +465,9 @@
 
             turnGUI.destroy();
             turnGUI = new dat.GUI();
+            unitGUI.destroy();
+            unitGUI = new dat.GUI();
+            
             var text = {
                 player: currentPlayer.playerNum,
                 endTurn: function () { newTurn(); }
