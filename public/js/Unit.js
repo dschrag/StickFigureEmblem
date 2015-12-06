@@ -11,6 +11,9 @@
         var unitModel;
         var isDead; flag for checking if the unit is dead
         var pOwner; Player who owns it. Denoted by 0 (no one), 1 (player 1), or 2 (player2) 
+        var validMoves[]; positions that can be moved to. 
+        var validAttacks[]; positions that can attacked. 
+
    Functions:
         void setModel(Model model); 
         void combat(UNIT unit1, UNIT unit2, bool counter); 
@@ -22,6 +25,7 @@ function Unit(unitClass) {
     this.unitClass = unitClass;
     this.pOwner = 0; // initalize it to 0 at first. It'll be changed when the game starts. 
     this.isDead = false;
+    this.unitModel = undefined;
     if (unitClass == "warrior" || unitClass == "Warrior") {
         // Warrior specific attributes. 
 
@@ -51,6 +55,78 @@ function Unit(unitClass) {
 
     this.setModel = function (model) {
         this.unitModel = model;
+    }
+
+
+    this.validMoves = new Array();
+    this.validAttacks = new Array();
+
+    this.setMoves = function ()
+    {
+        if (this.unitClass == "ranger" || this.unitClass == "Ranger")
+        {
+            var tempPos = {x:0, y:0, x:0};
+
+            for (i = 0; i < 5; i++){
+                tempPos.x = this.unitModel.position.x; 
+                tempPos.y = this.unitModel.position.y;
+                tempPos.z = this.unitModel.position.z;
+                if (i == 0) {
+                    tempPos.z += 50;
+                    this.validMoves[i][2] = tempPos;
+                }
+                else if (i == 1) {
+                    tempPos.z += 25;
+                    tempPos.x -= 25;
+                    this.validMoves[i][1] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][2] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][3] = tempPos;
+                }
+                else if (i == 2)
+                {
+                    tempPos.x -= 50;
+                    this.validMoves[i][0] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][1] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][2] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][3] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][4] = tempPos;
+                }
+                else if (i == 3)
+                {
+                    tempPos.z -= 25;
+                    tempPos.x -= 25;
+                    this.validMoves[i][1] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][2] = tempPos;
+                    tempPos.x += 25;
+                    this.validMoves[i][3] = tempPos;
+                }
+                else if (i == 4)
+                {
+                    tempPos.z -= 50;
+                    this.validMoves[i][2] = tempPos;
+                }
+            }
+        }
+        if (this.unitClass == "warrior" || this.unitClass == "Warrior")
+        {
+
+        }
+        if (this.unitClass == "mage" || this.unitClass == "Mage")
+        {
+
+        }
+    }
+
+    this.setAttacks = function()
+    {
+
     }
 
     this.critical = function (unit1, unit2) {
@@ -116,6 +192,7 @@ function Unit(unitClass) {
         // dunno if we can destroy the unit from here. 
         //We'll just mark the unit for death. 
         this.isDead = true;
+        delete this.unitModel;
     }
 
 }

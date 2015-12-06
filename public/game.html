@@ -59,7 +59,7 @@
         var unitArray = [];
         var unitIndex = 0;
 
-        var Player1, Player2;
+        var Player1, Player2, currentPlayer;
 
         // control boolean flags
         var assignBool = false;
@@ -76,6 +76,10 @@
         var currentKeyframe = 0;
         var movementKeys = ["up", "down", "left", "right"]; // four cardinal directions 
         var forbidKeys = [false, false, false, false] // prevent from keeping moving until you do something different.
+        
+        // GUI stuff
+        var turnGUI; // GUI denoting player turn. 
+        var unitGUI; // GUI showing when currentModel isn't undefined and it's the proper player.
 
         init();
 
@@ -210,7 +214,7 @@
                 console.log("currentModel position z: " + currentModel.position.z);
                 
                 // spawn GUI here
-
+                
             }
             else
             {
@@ -379,7 +383,17 @@
             Player2.unitArray[0].unitModel.position.set(275, 0, 475);
             Player2.unitArray[1].unitModel.position.set(375, 0, 475);
             Player2.unitArray[2].unitModel.position.set(475, 0, 475);
+            currentPlayer = Player1; 
             setBoard = true;
+        }
+
+        function newTurn()
+        {
+            if (currentPlayer == Player1)
+                currentPlayer = Player2; 
+            else 
+                currentPlayer = Player1; 
+
         }
         
         function checkForUnits(direction, position)
