@@ -39,15 +39,6 @@ function Player (number)
         }
     }
 
-    this.move = function(unit)
-    {
-
-    }
-    this.attack = function(unit)
-    {
-
-    }
-
     this.caclulateScore = function ()
     {
 

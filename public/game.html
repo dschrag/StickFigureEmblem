@@ -234,8 +234,8 @@
                                 unitClass: currentUnit.unitClass,
                                 health: currentUnit.health,
                                 owner: currentUnit.pOwner,
-                                move: function () { console.log("moving stuff"); currentPlayer.move(currentUnit)},
-                                attack: function () { console.log("attacking stuff"); currentPlayer.attack(currentUnit) },
+                                move: function () { console.log("moving stuff"); move();},
+                                attack: function () { console.log("attacking stuff"); attack();},
                             };
                             unitGUI.add(text, 'health').name("Health");
                             unitGUI.add(text, 'unitClass').name("Class");
@@ -381,6 +381,14 @@
             //stats.update();
         }
 
+        function move() {
+
+        }
+
+        function attack() {
+
+        }
+
         function log() {    
             console.log("targetList.length: " + targetlist.length);
             console.log("Unit array length logged: " + unitArray.length);
@@ -426,12 +434,16 @@
                 }
                 else if (i % 3 == 1){
                     tempUnit.unitClass = "mage";
+                    tempUnit.health = 190;
                     tempUnit2.unitClass = "mage";
+                    tempUnit2.health = 190;
                 }
                 else {
                     if (i % 3 == 2){
                         tempUnit.unitClass = "ranger";
+                        tempUnit.health = 125;
                         tempUnit2.unitClass = "ranger";
+                        tempUnit2.health = 125;
                     }
                 }
                 unitArray[i].pOwner = Player1.playerNum;
@@ -452,6 +464,14 @@
             Player2.unitArray[0].unitModel.position.set(275, 0, 475);
             Player2.unitArray[1].unitModel.position.set(375, 0, 475);
             Player2.unitArray[2].unitModel.position.set(475, 0, 475);
+
+            Player1.unitArray[0].setMoves();
+            Player1.unitArray[1].setMoves();
+            Player1.unitArray[2].setMoves();
+            Player2.unitArray[0].setMoves();
+            Player2.unitArray[1].setMoves();
+            Player2.unitArray[2].setMoves();
+
             currentPlayer = Player1; 
             setBoard = true;
         }

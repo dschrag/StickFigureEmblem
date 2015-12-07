@@ -26,6 +26,9 @@ function Unit(unitClass) {
     this.pOwner = 0; // initalize it to 0 at first. It'll be changed when the game starts. 
     this.isDead = false;
     this.unitModel = undefined;
+    this.validMoves = undefined;
+    this.validAttacks = undefined;
+
     if (unitClass == "warrior" || unitClass == "Warrior") {
         // Warrior specific attributes. 
 
@@ -57,17 +60,19 @@ function Unit(unitClass) {
         this.unitModel = model;
     }
 
-
-    this.validMoves = new Array();
-    this.validAttacks = new Array();
-
     this.setMoves = function ()
     {
+        
         if (this.unitClass == "ranger" || this.unitClass == "Ranger")
         {
-            var tempPos = {x:0, y:0, x:0};
+            var tempPos = { x: 0, y: 0, x: 0 };
 
-            for (i = 0; i < 5; i++){
+            this.validMoves = new Array(5);
+            for (i = 0; i < 5; i++)
+                this.validMoves[i] = new Array();
+
+            for (i = 0; i < 5; i++) {
+                console.log("iteration i: " + i)
                 tempPos.x = this.unitModel.position.x; 
                 tempPos.y = this.unitModel.position.y;
                 tempPos.z = this.unitModel.position.z;
@@ -122,11 +127,12 @@ function Unit(unitClass) {
         {
 
         }
+        return this.validMoves;
     }
 
     this.setAttacks = function()
     {
-
+        this.validAttacks = new Array();
     }
 
     this.critical = function (unit1, unit2) {
