@@ -210,7 +210,9 @@ SFE.BoardController = function (options) {
 		var i = boardLength - Math.ceil((tileSize * boardLength - pos.z) / tileSize);
 		var j = Math.ceil(pos.x / tileSize - 1);
 		console.log(i);
+		if (j === -0) j = 0;
 		console.log(j);
+		
 		if (i > (boardLength - 1) || i < 0 || j > (boardWidth - 1) || j < 0 || isNaN(i) || isNaN(j)) {
 			return false;	
 		}
@@ -222,6 +224,7 @@ SFE.BoardController = function (options) {
 		
 		if (isMouseOnBoard(mouse3D)) {
 			if (isUnitOnMousePosition(mouse3D)) {
+				calculateActions(worldToBoard(mouse3D));
 				console.log("Yay");
 				//renderer.domElement.addeventListener('mousemove', onMouseMove, false);	
 			}
@@ -273,11 +276,44 @@ SFE.BoardController = function (options) {
 	
 	function isUnitOnMousePosition(pos) {
 		var boardPos = worldToBoard(pos);
-		console.log(boardPos[0] + " " + boardPos[1]);
+		console.log("mouseBoardPos: " + boardPos[0] + " " + boardPos[1]);
 		
-		if (boardPos && (board[boardPos[0]][boardPos[1]] !== 0)) {
+		return isUnitAtTile(boardPos);
+	}
+	
+	var unitPossibleMoves = [];
+
+	function calculateActions (pos) {
+	
+		unitPossibleMoves.push({x: 1, z: 1});
+		unitPossibleMoves.push({x: 1, z: 2});
+		unitPossibleMoves.push({x: 0, z: 1});
+		unitPossibleMoves.push({x: 0, z: 2});
+		
+		console.log(pos);
+	  // check each possible move for the unit
+	  for (var i = 0; i < unitPossibleMoves.length; i++) {
+		var movePos = unitPossibleMoves[i];
+		var tilePos = [];
+		tilePos[0] = pos[0] + movePos.x;
+		tilePos[1] = pos[1] + movePos.z;
+		if (tilePos[0] >= 0 && tilePos[0] < 20 && tilePos[1] >= 0 && tilePos[1] < 20) {
+			if (!isUnitAtTile(tilePos)) {
+				console.log("movePos.x: " + movePos.x + " z: " + movePos.z + ", tilePos: " + tilePos[0] + " z: " + tilePos[1]);
+				tiles[tilePos[0]][tilePos[1]].material = materials.board;	
+			}
+		}
+	  }
+  
+}
+	
+	function isUnitAtTile(boardPos) {
+		console.log("boardPos: " + boardPos);
+		var x = boardPos[0];
+		var z = boardPos[1];
+		if (boardPos && (board[x][z] !== 0)) {
 			console.log("Unit here! Belongs to: " + board[boardPos[0]][boardPos[1]].color);
-			tiles[boardPos[0]][boardPos[1]].material = materials.board;
+			//tiles[boardPos[0]][boardPos[1]].material = materials.board;
 			return true;
 		} else {
 			return false;
