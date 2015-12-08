@@ -28,6 +28,7 @@ function Unit(unitClass) {
     this.unitModel = undefined;
     this.validMoves = undefined;
     this.validAttacks = undefined;
+    this.position = { x: 0, z: 0 };
 
     if (unitClass == "warrior" || unitClass == "Warrior") {
         // Warrior specific attributes. 
@@ -58,6 +59,12 @@ function Unit(unitClass) {
 
     this.setModel = function (model) {
         this.unitModel = model;
+    }
+
+    this.setPosition(x, z)
+    {
+        this.position.x = x;
+        this.position.z = z;
     }
 
     this.setMoves = function (unitArray)
@@ -238,7 +245,7 @@ function Unit(unitClass) {
         // dunno if we can destroy the unit from here. 
         //We'll just mark the unit for death. 
         this.isDead = true;
-        delete this.unitModel;
+        
     }
 
 }

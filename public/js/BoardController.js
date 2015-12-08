@@ -19,7 +19,7 @@ SFE.BoardController = function (options) {
 	var tiles = [];
 	
 	// Unit variables
-	var ranger1, gameboard, ground;
+	var ranger, mage, warrior, gameboard, ground;
 	
 	var containerEl = options.containerEl || null;
 	var assetsUrl = options.assetsUrl || '';
@@ -37,7 +37,8 @@ SFE.BoardController = function (options) {
 	};
 	
 	this.addUnit = function (oonit) {
-		var unitMesh = new THREE.Mesh(ranger1);
+	    var unitMesh = new THREE.Mesh(ranger);
+	    oonit.setModel(unitMesh);
 		var unitTeam = new THREE.Object3D();
 		
 		if (oonit.color === 1) {
@@ -149,7 +150,7 @@ SFE.BoardController = function (options) {
 		});
 		
 		loader.load(assetsUrl + 'ranger.json', function (geom) {
-			ranger1 = geom;
+			ranger = geom;
 			//ranger1.position.set(5,0,5);
 			//scene.add(ranger1);
 			checkLoad();

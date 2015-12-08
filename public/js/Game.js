@@ -39,7 +39,9 @@ SFE.Game = function (options) {
 	
 	function onBoardReady() {
 		var row, col, oonit;
-		
+		    var unit;
+		    unit = new Unit("ranger");
+
 		oonit = { color: SFE.BLUE, pos: [0, 0] };
 		board[0][0] = oonit;
 		boardController.addUnit(oonit);
