@@ -21,21 +21,20 @@ app.use(express.static(__dirname + '/public'));
 // get the app environment from Cloud Foundry
 var appEnv = cfenv.getAppEnv();
 
-var cloudant = {
-	url: "https://64a24f2c-69f0-40f4-bd9c-04d6488fbaba-bluemix:cc6abd119705601eb695f5270baeaf5a01d00ed1c7179b44e65df40d9af95dfb@64a24f2c-69f0-40f4-bd9c-04d6488fbaba-bluemix.cloudant.com"
-};
+var Cloudant = require('cloudant');
+var me = '64a24f2c-69f0-40f4-bd9c-04d6488fbaba-bluemix'; // Set this to your own account
+var password = 'cc6abd119705601eb695f5270baeaf5a01d00ed1c7179b44e65df40d9af95dfb';
 
-if (process.env.hasOwnProperty("VCAP_SERVICES")) {
-  // Running on Bluemix. Parse out the port and host that we've been assigned.
-  var env = JSON.parse(process.env.VCAP_SERVICES);
-  var host = process.env.VCAP_APP_HOST;
-  var port = process.env.VCAP_APP_PORT;
+// Initialize the library with my account.
+var cloudant = Cloudant({account:me, password:password});
 
-  // Also parse out Cloudant settings.
-  cloudant = env['cloudantNoSQLDB'][0].credentials;  
-}
-var nano = require('nano')(cloudant.url);
-var db = nano.db.use('sfe_scores');
+cloudant.db.list(function(err, allDbs) {
+  console.log('All my databases: %s', allDbs.join(', '))
+});
+
+var dbsfe = cloudant.use('sfe_scores');
+
+var url = 'https://64a24f2c-69f0-40f4-bd9c-04d6488fbaba-bluemix.cloudant.com/dashboard.html#database/sfe_scores/_design/top_scores/_view/top_scores?limit=10&descending=true';
 
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() {
@@ -45,15 +44,57 @@ app.listen(appEnv.port, '0.0.0.0', function() {
 });
 
 app.get('/hiscores', function(request, response) {
-  db.view('top_scores', 'top_scores_index', function(err, body) {
-  if (!err) {
-    var scores = [];
-      body.rows.forEach(function(doc) {
-        scores.push(doc.value);		      
-      });
-      response.send(JSON.stringify(scores));
-    }
+  function sendDetails(details) {
+		response.send(details); 
+  }
+  
+ 
+  var docs = dbsfe.list(function(err, response) {
+	 var details = "";
+	 numrows = response.total_rows;
+	 //console.log(numrows);
+	 
+	 function catcatDetails(details, name, score) {
+		var tblrowopen = "<tr>";
+		var tbltagopen = '<td class="score">';
+		var tbltagclose = "</td>";
+		var tblrowclose = "</tr>";
+		
+		details = details.concat(tblrowopen);
+		details = details.concat(tbltagopen);
+		details = details.concat(name);
+		details = details.concat(tbltagclose);
+		details = details.concat(tbltagopen);
+		details = details.concat(score);
+		details = details.concat(tbltagclose);
+		details = details.concat(tblrowclose);
+		
+		return details; 
+	 }
+	 
+	 j = 0;
+	 for (var i = 0; i < numrows; i++) {
+		//console.log(i);
+		dbsfe.get(response.rows[i].id, function(err, doc) {
+			j++;
+			if (!(typeof doc.name === 'undefined')) {
+				var n = JSON.stringify(doc.name);
+				var s = JSON.stringify(doc.score);
+				details = catcatDetails(details, n, s);
+			} else {
+				//console.log("undefined!");
+				return;
+			}
+			
+			if (j == numrows) {
+				console.log(details);
+				sendDetails(details);
+			}
+		});
+	 }
+	 
   });
+  
 });
 
 app.get('/save_score', function(request, response) {
@@ -61,9 +102,10 @@ app.get('/save_score', function(request, response) {
   var score = request.query.score;
 
   var scoreRecord = { 'name': name, 'score' : parseInt(score), 'date': new Date() };
-  db.insert(scoreRecord, function(err, body, header) {
+  dbsfe.insert(scoreRecord, function(err, body, header) {
     if (!err) {       
       response.send('Successfully added one score to the DB');
     }
   });
 });
+

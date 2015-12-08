@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Stick Figure Emblem High Scores</title>
+<style>
+	td.score {
+		right:auto;
+		color:#FFF;
+	}
+</style>
+<link rel="stylesheet" href="stylesheets/style.css">
+</head>
+<script type="text/javascript">
+	function getScores() {
+		var xmlHttp = new XMLHttpRequest();
+   		xmlHttp.open( "GET", "/hiscores", false ); // false for synchronous request
+    	xmlHttp.send( null );
+    	return xmlHttp.responseText;
+	}
+	
+	function showScores() {
+			document.write(getScores());
+	}
+	
+	function addTableRow() {
+		var s = "<td>Hello</td>";
+		document.write(s);	
+	}
+</script>
+<body>
+Hello, welcome to the danger zone.
+<div id="scores" style="display:none;" class="score">Showing high scores</div>
+<table>
+<tr>
+	<th>Name</th><th>Score</th>
+  </tr>
+  <tr>
+  <script>showScores();</script>
+  </tr>
+  
+</table>
+</body>
+</html>
