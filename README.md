@@ -1,6 +1,6 @@
-# Node.js Starter Overview
+# Stick Figure Emblem
 
-The Node.js Starter demonstrates a simple, reusable Node.js web application based on the Express framework.
+A demo of a strategy game based off Nintendo's Fire Emblem series, made in 3D using Node.JS, and Three.JS.
 
 ## Run the app locally
 

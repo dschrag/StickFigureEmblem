@@ -9,7 +9,11 @@
 	    var critDamage; 
 	    var unitClass;
         var unitModel;
-        var isDead: flag for checking if the unit is dead. 
+        var isDead; flag for checking if the unit is dead
+        var pOwner; Player who owns it. Denoted by 0 (no one), 1 (player 1), or 2 (player2) 
+        var validMoves[]; positions that can be moved to. 
+        var validAttacks[]; positions that can attacked. 
+
    Functions:
         void setModel(Model model); 
         void combat(UNIT unit1, UNIT unit2, bool counter); 
@@ -19,7 +23,12 @@
 function Unit(unitClass) {
     
     this.unitClass = unitClass;
+    this.pOwner = 0; // initalize it to 0 at first. It'll be changed when the game starts. 
     this.isDead = false;
+    this.unitModel = undefined;
+    this.validMoves = undefined;
+    this.validAttacks = undefined;
+
     if (unitClass == "warrior" || unitClass == "Warrior") {
         // Warrior specific attributes. 
 
@@ -49,6 +58,121 @@ function Unit(unitClass) {
 
     this.setModel = function (model) {
         this.unitModel = model;
+    }
+
+    this.setMoves = function (unitArray)
+    {
+        
+        if (this.unitClass == "ranger" || this.unitClass == "Ranger")
+        {
+            this.validMoves = [{x:-2, z:0},{x:-1, z:0},{x:-1, z:-1},{x:-1, z:1}, 
+                {x:0, z:0},{x:0, z:-2},{x:0, z:-1},{x:0, z:1},{x:0, z:2},{x:1, z:0},{x:1, z:-1},{x:1, z:1},{x:2, z:0}]; 
+        }
+        if (this.unitClass == "warrior" || this.unitClass == "Warrior")
+        {
+            this.validMoves = new Array;
+            var x = -3;    
+            while (x < 4){
+                var z = -3; 
+                while(z < 4){
+                    var tempPos = {x:0, z:0};
+                    tempPos.x = x;
+                    tempPos.z = z;
+                    this.validMoves.push(tempPos)
+                    z++
+                }
+
+                x++;
+            }
+
+        }
+        if (this.unitClass == "mage" || this.unitClass == "Mage")
+        {
+            this.validMoves = [{ x: -3, z: 0 }, { x: -2, z: 0 }, { x: -2, z: -1 }, { x: -2, z: 1 },
+            { x: -1, z: -2 }, { x: -1, z: -1 }, { x: -1, z: 0 }, { x: -1, z: 1 }, { x: -1, z: 2 },
+            { x: 0, z: 0 }, { x: 0, z: -3 }, { x: 0, z: -2 }, { x: 0, z: -1 }, { x: 0, z: 1 }, { x: 0, z: 2 }, { x: 0, z: 3 },
+            { x: 1, z: 0 }, { x: 1, z: -2 }, { x: 1, z: -1 }, { x: 1, z: 1 }, { x: 1, z: 2 },
+            { x: 2, z: 0 }, { x: 2, z: -1 }, { x: 2, z: 1 }, { x: 3, z: 0 }, ]
+        }
+        return this.validMoves;
+    }
+
+    this.setAttacks = function()
+    {
+        if (this.unitClass == "ranger" || this.unitClass == "Ranger")
+        {
+            this.validAttacks = new Array;
+            for (x = 2; x < 6; x++) {
+                var tempPos = { x: 0, z: 0 };
+                var tempNeg = { x: -1, z: 0 };
+                tempPos.x = x;
+                tempNeg.x = -1 * x;
+                this.validAttacks.push(tempPos);
+                this.validAttacks.push(tempNeg);
+            }
+            for (z = 2; z < 6; z++) {
+                var tempPos = { x: 0, z: 0 };
+                var tempNeg = { x: -1, z: 0 };
+                tempPos.z = z;
+                tempNeg.z = -1 * z;
+                this.validAttacks.push(tempPos);
+                this.validAttacks.push(tempNeg);
+            }
+
+            for (i = 2; i < 6; i++) {
+                var tempPos = { x: 0, z: 0 };
+                var tempNeg = { x: -1, z: -1 };
+                var tempNegX = { x: -1, z: 0 };
+                var tempNegZ = { x: 0, z: -1 };
+
+                tempPos.x = i;
+                tempPos.z = i;
+                this.validAttacks.push(tempPos);
+
+                tempNeg.x = i * -1;
+                tempNeg.z = i * -1;
+                this.validAttacks.push(tempNeg);
+
+                tempNegX.x = -1 *i;
+                tempNegX.z = i;
+                this.validAttacks.push(tempNegX);
+
+                tempNegZ.x = i;
+                tempNegZ.z = i* -1;
+                this.validAttacks.push(tempNegZ);
+
+            }
+        }
+
+        if (this.unitClass == "warrior" || this.unitClass == "Warrior")
+        {
+            this.validAttacks = new Array;
+            var x = -1; 
+            while ( x < 2)
+            {
+                var z = -1;
+                while (z < 2)
+                {
+                    var tempPos = { x: 0, z: 0 };
+                    tempPos.x = x;
+                    tempPos.z = z;
+                    this.validMoves.push(tempPos)
+                    z++
+                }
+                x++;
+            }
+        }
+
+        if (this.unitClass == 'mage' || this.unitClass == 'Mage')
+        {
+            this.validAttacks = [{ x: -3, z: 0 }, { x: -2, z: 0 }, { x: -2, z: -1 }, { x: -2, z: 1 },
+            { x: -1, z: -2 }, { x: -1, z: -1 }, { x: -1, z: 0 }, { x: -1, z: 1 }, { x: -1, z: 2 },
+            { x: 0, z: 0 }, { x: 0, z: -3 }, { x: 0, z: -2 }, { x: 0, z: -1 }, { x: 0, z: 1 }, { x: 0, z: 2 }, { x: 0, z: 3 },
+            { x: 1, z: 0 }, { x: 1, z: -2 }, { x: 1, z: -1 }, { x: 1, z: 1 }, { x: 1, z: 2 },
+            { x: 2, z: 0 }, { x: 2, z: -1 }, { x: 2, z: 1 }, { x: 3, z: 0 }, ]
+        }
+
+        return this.validAttacks;
     }
 
     this.critical = function (unit1, unit2) {
@@ -114,6 +238,7 @@ function Unit(unitClass) {
         // dunno if we can destroy the unit from here. 
         //We'll just mark the unit for death. 
         this.isDead = true;
+        delete this.unitModel;
     }
 
 }
