@@ -45,7 +45,7 @@ SFE.Game = function (options) {
 		
         console.log("Player 1's units")
 	    unit = new Unit("ranger");
-		unit.pOwner = SFE.BLUE;
+		unit.pOwner = 1;
 		unit.setPosition(0, 0);
 		unit.setMoves();
 		unitArray[unitIndex] = unit;
@@ -55,7 +55,7 @@ SFE.Game = function (options) {
 		boardController.addUnit(unit);
 
 		unit = new Unit("mage");
-		unit.pOwner = SFE.BLUE;
+		unit.pOwner = 1;
 		unit.setPosition(1, 0);
 		unit.setMoves();
 		unitArray[unitIndex] = unit;
@@ -65,7 +65,7 @@ SFE.Game = function (options) {
 		boardController.addUnit(unit);
 
 		unit = new Unit("warrior");
-		unit.pOwner = SFE.BLUE;
+		unit.pOwner = 1;
 		unit.setPosition(2, 0);
 		unit.setMoves();
 		unitArray[unitIndex] = unit;
@@ -76,7 +76,7 @@ SFE.Game = function (options) {
 
 		console.log("Player 2's units")
 		unit = new Unit("Ranger");
-		unit.pOwner = SFE.RED;
+		unit.pOwner = 2;
 		unit.setPosition(19, 19);
 		unit.setMoves();
 		unitArray[unitIndex] = unit;
@@ -86,7 +86,7 @@ SFE.Game = function (options) {
 		boardController.addUnit(unit);
 
 		unit = new Unit("mage");
-		unit.pOwner = SFE.RED;
+		unit.pOwner = 2;
 		unit.setPosition(19, 18);
 		unit.setMoves();
 		unitArray[unitIndex] = unit;
@@ -96,7 +96,7 @@ SFE.Game = function (options) {
 		boardController.addUnit(unit);
 
 		unit = new Unit("warrior");
-		unit.pOwner = SFE.RED;
+		unit.pOwner = 2;
 		unit.setPosition(19, 17);
 		unit.setMoves();
 		unitArray[unitIndex] = unit;
