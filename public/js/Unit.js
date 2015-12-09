@@ -78,7 +78,8 @@ function Unit(unitClass) {
     }
     
     this.cantAttack = function () {
-        this.canAttack = false; 
+        this.canAttack = false;
+        this.canMove = false;
     }
 
     this.setMoves = function ()

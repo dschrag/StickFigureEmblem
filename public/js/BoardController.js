@@ -248,6 +248,7 @@ SFE.BoardController = function (options) {
 		//console.log(camera.getWorldDirection());
 		cameraController.update();
 		renderer.render(scene, camera);
+		floatDeadUnit();
 	}
 
 	function boardToWorld(pos) {
@@ -347,36 +348,38 @@ function onMouseDown(event) {
 		        else 
                     console.log("Unit has already moved! ")*/
 	        }
-		    if (board[tileSelected.x][tileSelected.z] !== 0 && tileisAttackable(tileSelected)) {
-		        var enemy = findUnit(tileSelected);
-		        console.log("Enemy found belonging to " + enemy.pOwner + " with class " + enemy.unitClass);
-                console.log("FIGHT!")
-                selectedUnit.combat(selectedUnit, enemy, true);
-                console.log("Done fighting")
-                console.log("Enemy health: " + enemy.health);
-                console.log("Ally health: " + selectedUnit.health);
-                if (enemy.isDead) {
-                    console.log("It's time for this unit to die.")
-                    board[tileSelected.x][tileSelected.z] = 0;
+	        if (board[tileSelected.x][tileSelected.z] !== 0 && tileisAttackable(tileSelected)) {
+	            //if (selectedUnit.canAttack) {
+	                var enemy = findUnit(tileSelected);
+	                console.log("Enemy found belonging to " + enemy.pOwner + " with class " + enemy.unitClass);
+	                console.log("FIGHT!")
+	                selectedUnit.combat(selectedUnit, enemy, true);
+	                //selectedUnit.cantAttack();
+	                console.log("Done fighting")
+	                console.log("Enemy health: " + enemy.health);
+	                console.log("Ally health: " + selectedUnit.health);
+	                if (enemy.isDead) {
+	                    console.log("It's time for this unit to die.")
+	                    board[tileSelected.x][tileSelected.z] = 0;
 
-                    //scene.remove(enemy.unitModel)
-                    for (i = enemy.unitModel.position.y; i < 1000; i+=50)
-                    {
-                        enemy.unitModel.position.y += i;
-                        enemy.unitShadow.position.y+= i;
-                    }
-                }
-                if (selectedUnit.isDead)
-                {
-                    console.log("An ally has fallen while fighting")
-                    var dedx = selectedUnit.position.x;
-                    var dedz = selectedUnit.position.z;
-                    board[dedx][dedz] = 0;
-                    selectedUnit.unitModel.position.y += 1000;
-                    selectedUnit.unitShadow.position.y += 1000;
-                }
+	                   /* //scene.remove(enemy.unitModel)
+	                    for (i = enemy.unitModel.position.y; i < 1000; i += 10) {
+	                        enemy.unitModel.position.y += i;
+	                        enemy.unitShadow.position.y += i;
+	                        onAnimationFrame();
+	                    }*/
+	                }
+	                if (selectedUnit.isDead) {
+	                    console.log("An ally has fallen while fighting")
+	                    var dedx = selectedUnit.position.x;
+	                    var dedz = selectedUnit.position.z;
+	                    board[dedx][dedz] = 0;
+	                    selectedUnit.unitModel.position.y += 1000;
+	                    selectedUnit.unitShadow.position.y += 1000;
+	                }
 
-		    }
+	            }
+	        //}
 		    resetTiles();
 		    selectedUnit = unitArray[10];
 		
@@ -385,6 +388,23 @@ function onMouseDown(event) {
 	    cameraController.userRotate = false;
     }
 }
+
+    function floatDeadUnit() {
+        var i;
+        for (i = 0; i < unitArray.length; i++) {
+            //console.log(i);
+            if (unitArray[i] != undefined)
+                //console.log(unitArray[i].isDead)
+            if (unitArray[i] != undefined && unitArray[i].isDead) {
+                console.log("is ded")
+                var ded = unitArray[i];
+                if (ded.unitModel.position.y <= 1000) {
+                    ded.unitModel.position.y += 1;
+                    ded.unitShadow.position.y += 1;
+                }
+            }
+        }
+    }
 
 	function onMouseUp(event) {
 		cameraController.userRotate = true;

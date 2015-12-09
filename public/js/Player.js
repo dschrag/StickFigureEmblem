@@ -17,6 +17,15 @@ Functions:
 */
 function Player (number)
 {
+    this.playerName = "Please enter your name";
+    this.setPlayerName = function (name) {
+        if (name == undefined) {
+            console.log(this.playerName)
+        }
+        else 
+            this.playerName = name;
+        
+    }
     this.playerNum = number;
     this.score = 0;
     this.unitArray = new Array;
