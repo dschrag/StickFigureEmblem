@@ -1,23 +1,63 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<link rel="stylesheet" type="text/css" href="css/style.css" />
+	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/	bootstrap.min.js"></script>
+  <style>
+  .peopleCarouselImg img {
+  	width: auto;
+  	height: 225px;
+  	max-height: 225px;
+	}
+  </style>
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Stick Figure Emblem</title>
 </head>
 
 <body>
-	<div id="boardContainer"></div>
+<div id="carousel" class="carousel slide" data-ride="carousel" data-interval="false">
+  <!-- Indicators -->
+  <ol class="carousel-indicators">
+    <li data-target="#carousel" data-slide-to="0" class="active"></li>
+    <li data-target="#carousel" data-slide-to="1"></li>
+    <li data-target="#carousel" data-slide-to="2"></li>
+  </ol>
+ 
+  <!-- Wrapper for slides -->
+  <div class="carousel-inner">
+    <div class="item active">
+    <img src="models/PlayGamePage.jpg" />
+      <div class="carousel-caption">
+        <h3><img src="models/StickFigureEmblemLogo.fw.png" alt="Stick Figure Emblem" /></h3>
+         <a href="game.html">
+         <button type="button" class="btn btn-secondary">Play Game</button>
+      </a>      </div>
+    </div>
+    <div class="item">
+      <img src="http://placehold.it/1200x315" alt="...">
+      <div class="carousel-caption">
+          <h3>Caption Text</h3>
+      </div>
+    </div>
+    <div class="item">
+      <img src="http://placehold.it/1200x315" alt="...">
+      <div class="carousel-caption">
+          <h3>Caption Text</h3>
+      </div>
+    </div>
+  </div>
+ 
+  <!-- Controls -->
+  <a class="left carousel-control" href="#carousel" role="button" data-slide="prev">
+    <span class="glyphicon glyphicon-chevron-left"></span>
+  </a>
+  <a class="right carousel-control" href="#carousel" role="button" data-slide="next">
+    <span class="glyphicon glyphicon-chevron-right"></span>
+  </a>
+</div> <!-- Carousel -->
 
-    <script src="js/three/three.js"></script>
-    <script src="js/three/OrbitControls.js"></script>
-    <script type="text/javascript" src="js/DAT.GUI.min.js"></script>
-    <script src="js/Unit.js"></script>
-    <script src="js/Player.js"></script>
-    <script src="js/Game.js"></script>
-    <script src="js/BoardController.js"></script>
-    <script src="js/main.js"></script>
 
 </body>
 </html>
