@@ -396,7 +396,7 @@ function onMouseDown(event) {
             if (unitArray[i] != undefined)
                 //console.log(unitArray[i].isDead)
             if (unitArray[i] != undefined && unitArray[i].isDead) {
-                console.log("is ded")
+                //console.log("is ded")
                 var ded = unitArray[i];
                 if (ded.unitModel.position.y <= 1000) {
                     ded.unitModel.position.y += 1;
