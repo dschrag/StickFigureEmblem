@@ -374,8 +374,8 @@ function onMouseDown(event) {
 	                    var dedx = selectedUnit.position.x;
 	                    var dedz = selectedUnit.position.z;
 	                    board[dedx][dedz] = 0;
-	                    selectedUnit.unitModel.position.y += 1000;
-	                    selectedUnit.unitShadow.position.y += 1000;
+	                    //selectedUnit.unitModel.position.y += 1000;
+	                    //selectedUnit.unitShadow.position.y += 1000;
 	                }
 
 	            }
@@ -406,7 +406,7 @@ function onMouseDown(event) {
         }
     }
 
-	function onMouseUp(event) {
+	function onMouseUp(event) { 
 		cameraController.userRotate = true;
 	}
 
