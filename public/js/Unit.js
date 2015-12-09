@@ -61,10 +61,10 @@ function Unit(unitClass) {
         this.unitModel = model;
     }
 
-    this.setPosition(x, z)
+    this.setPosition = function (posx, posz)
     {
-        this.position.x = x;
-        this.position.z = z;
+        this.position.x = posx;
+        this.position.z = posz;
     }
 
     this.setMoves = function (unitArray)
