@@ -42,13 +42,13 @@ SFE.BoardController = function (options) {
 	this.addUnit = function (oonit) {
 		var unitMesh;
 		if (oonit.unitClass == "ranger" || oonit.unitClass == "Ranger") {
-			unitMesh = new THREE.Mesh(ranger);
+		    unitMesh = new THREE.Mesh(ranger);
 		} else if (oonit.unitClass == "warrior" || oonit.unitClass == "Warrior") {
 			unitMesh = new THREE.Mesh(warrior);
 		} else {
 			unitMesh = new THREE.Mesh(mage);
 		}
-		
+		oonit.setModel(unitMesh);
 		var unitTeam = new THREE.Object3D();
 
 		if (oonit.pOwner === 1) {
@@ -59,6 +59,7 @@ SFE.BoardController = function (options) {
 		}
 
 		var shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(tileSize, tileSize, 1, 1), materials.ground);
+        oonit.setShadow(shadowPlane)
 		shadowPlane.rotation.x = -90 * Math.PI / 180;
 
 		unitTeam.add(unitMesh);
@@ -291,45 +292,98 @@ SFE.BoardController = function (options) {
 
 	function tileIsMovableTo(t) {
 		//console.log(t.z);
-	if 	(tiles[t.x][t.z].material === materials.darkgrass_green || tiles[t.x][t.z].material === materials.lightgrass_green) {
-		//console.log("Can move here");
-		return true;
-	} else {
-		return false;
+	    if 	(tiles[t.x][t.z].material === materials.darkgrass_green || tiles[t.x][t.z].material === materials.lightgrass_green) {
+		    console.log("Can move here");
+		    return true;
+	    } else {
+		    return false;
+	    }
 	}
-}
+
+	function tileisAttackable(t) {
+	    console.log("Can we attack " + t)
+	    console.log(tiles[t.x][t.z])
+	    if (tiles[t.x][t.z].material === materials.darkgrass_red || tiles[t.x][t.z].material === materials.lightgrass_red) {
+            console.log("can attack")
+	        return true;
+	    }
+	    else {
+            console.log("Enemies missing")
+	        return false;
+	    }
+	}
+
 
 function onMouseDown(event) {
-var mouse3D = getMouse3D(event);
+    var mouse3D = getMouse3D(event);
 
-if (isMouseOnBoard(mouse3D)) {
-	if (isUnitOnMousePosition(mouse3D) && selectedUnit === unitArray[10]) { // THIS IS THE FIRST CLICK, where a unit is not selected
-		//console.log(unitArray);
-		setSelectedUnit(worldToBoard(mouse3D));
-		//console.log("Selected unit: ");
-		//console.log(selectedUnit);
-		calculateActions(worldToBoard(mouse3D), selectedUnit.validMoves);
+    if (isMouseOnBoard(mouse3D)) {
+	    if (isUnitOnMousePosition(mouse3D) && selectedUnit === unitArray[10]) { // THIS IS THE FIRST CLICK, where a unit is not selected
+		    //console.log(unitArray);
+		    setSelectedUnit(worldToBoard(mouse3D));
+		    //console.log("Selected unit: ");
+	        //console.log(selectedUnit);
+		    if (selectedUnit.canAttack)
+		        calculateActions(worldToBoard(mouse3D), selectedUnit.validAttacks, "attack");
+
+            //if (selectedUnit.canMove)
+                calculateActions(worldToBoard(mouse3D), selectedUnit.validMoves, "move");
+
 	
-	} else if (selectedUnit !== unitArray[10]) { // IF A UNIT IS SELECTED THOUGH
-		//console.log("Unit is selected");
-		var tileToMoveTo = worldToBoard(mouse3D); 				// Get the position of the tile the unit wants to go to
-		if (board[tileToMoveTo.x][tileToMoveTo.z] === 0 && tileIsMovableTo(tileToMoveTo)) { // if there is not a unit in the board at that position, and the tile is able to be moved to (based off the units available moves
-			var op = selectedUnit.position;
-			var vp = boardToWorld(tileToMoveTo); 							// get new coordinates for units position
-			board[op.x][op.z].position.set(vp.x, vp.y, vp.z); 			// set units new position
-			board[tileToMoveTo.x][tileToMoveTo.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
-			board[op.x][op.z] = 0;
-			selectedUnit.setPosition(tileToMoveTo.x, tileToMoveTo.z);
-			//selectedUnit = 0;
-		}
-		resetTiles();
-		selectedUnit = unitArray[10];
+	    } else if (selectedUnit !== unitArray[10]) { // IF A UNIT IS SELECTED THOUGH
+		    //console.log("Unit is selected");
+	        var tileSelected = worldToBoard(mouse3D); 				// Get the position of the tile the unit wants to go to
+	        if (board[tileSelected.x][tileSelected.z] === 0 && tileIsMovableTo(tileSelected)) { // if there is not a unit in the board at that position, and the tile is able to be moved to (based off the units available moves
+	            //if (selectedUnit.canMove) {
+	            var op = selectedUnit.position;
+	            var vp = boardToWorld(tileSelected); 							// get new coordinates for units position
+	            board[op.x][op.z].position.set(vp.x, vp.y, vp.z); 			// set units new position
+	            board[tileSelected.x][tileSelected.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
+	            board[op.x][op.z] = 0;
+	            selectedUnit.setPosition(tileSelected.x, tileSelected.z);
+	            selectedUnit.cantMove();
+	            //selectedUnit = 0;
+	            /*}
+		        else 
+                    console.log("Unit has already moved! ")*/
+	        }
+		    if (board[tileSelected.x][tileSelected.z] !== 0 && tileisAttackable(tileSelected)) {
+		        var enemy = findUnit(tileSelected);
+		        console.log("Enemy found belonging to " + enemy.pOwner + " with class " + enemy.unitClass);
+                console.log("FIGHT!")
+                selectedUnit.combat(selectedUnit, enemy, true);
+                console.log("Done fighting")
+                console.log("Enemy health: " + enemy.health);
+                console.log("Ally health: " + selectedUnit.health);
+                if (enemy.isDead) {
+                    console.log("It's time for this unit to die.")
+                    board[tileSelected.x][tileSelected.z] = 0;
+
+                    //scene.remove(enemy.unitModel)
+                    for (i = enemy.unitModel.position.y; i < 1000; i+=50)
+                    {
+                        enemy.unitModel.position.y += i;
+                        enemy.unitShadow.position.y+= i;
+                    }
+                }
+                if (selectedUnit.isDead)
+                {
+                    console.log("An ally has fallen while fighting")
+                    var dedx = selectedUnit.position.x;
+                    var dedz = selectedUnit.position.z;
+                    board[dedx][dedz] = 0;
+                    selectedUnit.unitModel.position.y += 1000;
+                    selectedUnit.unitShadow.position.y += 1000;
+                }
+
+		    }
+		    resetTiles();
+		    selectedUnit = unitArray[10];
 		
-	}
+	    }
 
-
-	cameraController.userRotate = false;
-}
+	    cameraController.userRotate = false;
+    }
 }
 
 	function onMouseUp(event) {
@@ -383,36 +437,81 @@ if (isMouseOnBoard(mouse3D)) {
 
 	var unitPossibleMoves = [];
 
-	function calculateActions (pos, unitPossibleMoves) {
-/*
-		unitPossibleMoves.push({x: 1, z: 1});
-	unitPossibleMoves.push({x: 1, z: 2});
-	unitPossibleMoves.push({x: 0, z: 1});
-	unitPossibleMoves.push({x: 0, z: 2});
-*/
-	console.log("CALCULATING AVAILABLE ACTIONS");
-	//console.log(unitPossibleMoves);
-	// check each possible move for the unit
-	for (var i = 0; i < selectedUnit.validMoves.length; i++) {
-	var movePos = unitPossibleMoves[i];
-	var tilePos = {};
-	tilePos.x = pos.x + movePos.x;
-	tilePos.z = pos.z + movePos.z;
-	if (tilePos.x >= 0 && tilePos.x < 20 && tilePos.z >= 0 && tilePos.z < 20) {
-		if (!isUnitAtTile(tilePos)) {
-			//console.log("movePos.x: " + movePos.x + " z: " + movePos.z + ", tilePos: " + tilePos.x + " z: " + tilePos.z);
-			if ((tilePos.x + tilePos.z) % 2 === 0 ) {
-				tiles[tilePos.x][tilePos.z].material = materials.lightgrass_green;
-			} else {
-				tiles[tilePos.x][tilePos.z].material = materials.darkgrass_green;
-			}
+	function calculateActions (pos, unitPossibleMoves, action) {
 
-		}
-	}
-	}
+	    console.log("CALCULATING AVAILABLE ACTIONS FOR " + action);
+	    //console.log(unitPossibleMoves);
+	    // check each possible move for the unit
 
+	    if (action == "move") {
+	        for (var i = 0; i < selectedUnit.validMoves.length; i++) {
+	            var movePos = unitPossibleMoves[i];
+	            var tilePos = {};
+	            tilePos.x = pos.x + movePos.x;
+	            tilePos.z = pos.z + movePos.z;
+	            if (tilePos.x >= 0 && tilePos.x < 20 && tilePos.z >= 0 && tilePos.z < 20) {
+	                if (!isUnitAtTile(tilePos)) {
+	                    //console.log("movePos.x: " + movePos.x + " z: " + movePos.z + ", tilePos: " + tilePos.x + " z: " + tilePos.z);
+	                    if ((tilePos.x + tilePos.z) % 2 === 0) {
+	                        if (tiles[tilePos.x][tilePos.z].material != materials.lightgrass_red) {
+	                            tiles[tilePos.x][tilePos.z].material = materials.lightgrass_green;
+	                        }
+	                    } else {
+	                        if (tiles[tilePos.x][tilePos.z].material != materials.darkgrass_red) {
+	                            tiles[tilePos.x][tilePos.z].material = materials.darkgrass_green;
+	                        }
+	                    }
+
+	                }
+	            }
+	        }
+	    }
+	    if (action == "attack") {
+            console.log("Valid attacks length" + selectedUnit.validAttacks.length)
+	        for (i = 0; i < selectedUnit.validAttacks.length; i++) {
+	            var attackPos = unitPossibleMoves[i];
+                //console.log("AttackPos: " + attackPos.x + "," + attackPos.z)
+	            var tilePos = {};
+	            tilePos.x = pos.x + attackPos.x;
+	            tilePos.z = pos.z + attackPos.z;
+	            if (tilePos.x >= 0 && tilePos.x < 20 && tilePos.z >= 0 && tilePos.z < 20) {
+	                if (isUnitAtTile(tilePos)) {
+	                    var unitFound = findUnit(tilePos);
+	                    console.log("owner at tilePos: " + unitFound.pOwner);
+	                    if (unitFound.pOwner != selectedUnit.pOwner) {
+	                        console.log("Found an enemy");
+	                        if ((tilePos.x + tilePos.z) % 2 === 0) {
+	                            tiles[tilePos.x][tilePos.z].material = materials.lightgrass_red;
+	                        } else {
+	                            tiles[tilePos.x][tilePos.z].material = materials.darkgrass_red;
+	                        }
+	                    }
+	                    
+
+	                }
+	            }
+	        }
+	    }
 }
+	function findUnit(position) {
+	    var unit = undefined;
+	    for (i = 0; i < unitArray.length; i++) {
+	        console.log(position.x);
+	        console.log(position.z);
 
+	        var posx = unitArray[i].position.x;
+	        var posz = unitArray[i].position.z;
+	        //console.log("posx: " + posx);
+	        //console.log("posz: " + posz);
+	        if (position.x == posx && position.z == posz) {
+                console.log("unit found")
+	            unit = unitArray[i];
+	            return unit;
+	        }
+	    }
+        console.log("No unit found")
+	    return unit;
+	}
 	function isUnitAtTile(boardPos) {
 	    //console.log("is unit at boardPos: " + boardPos);
 	    //console.log("boardPos.x " + boardPos.x);
@@ -421,7 +520,7 @@ if (isMouseOnBoard(mouse3D)) {
 		var posz = boardPos.z;
 		//console.log("boards x,z" + board[posx][posz]);
 		if (boardPos && (board[posx][posz] !== 0)) {
-			//console.log("Unit here! Belongs to: " + board[posx][posz].color);
+			console.log("Unit here! Belongs to: " + board[posx][posz].color);
 			return true;
 		} else {
             //console.log("Not found")

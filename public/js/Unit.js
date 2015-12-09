@@ -29,6 +29,8 @@ function Unit(unitClass) {
     this.validMoves = undefined;
     this.validAttacks = undefined;
     this.position = { x: 0, z: 0 };
+    this.canMove = true;
+    this.canAttack = true; 
 
     if (unitClass == "warrior" || unitClass == "Warrior") {
         // Warrior specific attributes. 
@@ -57,6 +59,10 @@ function Unit(unitClass) {
     this.baseDamage = 45 // may change to differ with classes classes. 
     this.criticalDamage = this.baseDamage * 1.5; // start off with 1.5 damage modifier for crit damage
 
+    this.setShadow = function (shadow) {
+        this.unitShadow = shadow;
+    }
+
     this.setModel = function (model) {
         this.unitModel = model;
     }
@@ -65,6 +71,14 @@ function Unit(unitClass) {
     {
         this.position.x = posx;
         this.position.z = posz;
+    }
+
+    this.cantMove = function () {
+        this.canMove = false;
+    }
+    
+    this.cantAttack = function () {
+        this.canAttack = false; 
     }
 
     this.setMoves = function ()
@@ -154,18 +168,17 @@ function Unit(unitClass) {
         if (this.unitClass == "warrior" || this.unitClass == "Warrior")
         {
             this.validAttacks = new Array;
-            var x = -1; 
-            while ( x < 2)
-            {
+            var x = -1;
+            while (x < 2) {
                 var z = -1;
-                while (z < 2)
-                {
+                while (z < 2) {
                     var tempPos = { x: 0, z: 0 };
                     tempPos.x = x;
                     tempPos.z = z;
-                    this.validMoves.push(tempPos)
-                    z++
+                    this.validAttacks.push(tempPos)
+                    z++;
                 }
+
                 x++;
             }
         }
@@ -189,8 +202,10 @@ function Unit(unitClass) {
             Mage trumps Warrior
             Ranger trumps Mage
          */
-        if (ununit2.unitClass == "Warrior" || unit2.unitClass == "warrior") {
+        console.log("Checking crits")
+        if (unit2.unitClass == "Warrior" || unit2.unitClass == "warrior") {
             if (unit2.unitClass == "Ranger" || unit2.unitClass == "ranger") {
+                console.log("Critical Damage!")
                 return true;
             }
             else {
@@ -198,25 +213,35 @@ function Unit(unitClass) {
             }
         }
         else if (unit1.unitClass == "Mage" || unit1.unitClass == "mage") {
-            if (unit2.unitClass == "Warrior" || unit2.unitClass == "warrior")
+            if (unit2.unitClass == "Warrior" || unit2.unitClass == "warrior") {
+                console.log("Critical Damage!")
                 return true;
+            }
             else
                 return false;
         }
         else {
             // assuming the last class is Ranger
-            if (unit1.unitClass == "Mage" || unit1.unitClass == "mage")
+            if (unit1.unitClass == "Mage" || unit1.unitClass == "mage") {
+                console.log("Critical Damage!")
                 return true;
+            }
             else
                 return false;
         }
     }
 
     this.combat = function (attacker, defender, counter) {
+        if (defender.isDead) {
+            console.log("You can't kill what is dead");
+            return;
+        }
+        console.log("beginning fights")
         if (attacker.critical(attacker, defender)) {
             defender.health -= attacker.criticalDamage;
         }
         else {
+            console.log("normal hit")
             defender.health -= attacker.baseDamage;
         }
 
@@ -224,6 +249,8 @@ function Unit(unitClass) {
         // true for attacker's initial move
         // false for defender's counter.
         if (counter === true) {
+            console.log("beginning counter attack.")
+            console.log("Defender hp: " + defender.health)
             if (defender.health > 0) {
                 defender.combat(defender, attacker, false);
             }
@@ -232,7 +259,8 @@ function Unit(unitClass) {
             }
         }
 
-        if (defender.heatlh < 0) {
+        if (defender.health < 0) {
+            console.log("He's dead Jim")
             defender.destroyUnit();
         }
 
@@ -249,4 +277,3 @@ function Unit(unitClass) {
     }
 
 }
-

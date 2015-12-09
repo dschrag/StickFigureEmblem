@@ -48,6 +48,7 @@ SFE.Game = function (options) {
 		unit.pOwner = 1;
 		unit.setPosition(0, 0);
 		unit.setMoves();
+		unit.setAttacks();
 		unitArray[unitIndex] = unit;
 		unitIndex++;
 		oonit = { color: SFE.BLUE, pos: [0, 0] };
@@ -58,6 +59,7 @@ SFE.Game = function (options) {
 		unit.pOwner = 1;
 		unit.setPosition(1, 0);
 		unit.setMoves();
+		unit.setAttacks();
 		unitArray[unitIndex] = unit;
 		unitIndex++;
 		oonit = { color: SFE.BLUE, pos: [1, 0] };
@@ -68,6 +70,7 @@ SFE.Game = function (options) {
 		unit.pOwner = 1;
 		unit.setPosition(2, 0);
 		unit.setMoves();
+		unit.setAttacks();
 		unitArray[unitIndex] = unit;
 		unitIndex++;
 		oonit = { color: SFE.BLUE, pos: [2, 0] };
@@ -79,6 +82,7 @@ SFE.Game = function (options) {
 		unit.pOwner = 2;
 		unit.setPosition(19, 19);
 		unit.setMoves();
+		unit.setAttacks();
 		unitArray[unitIndex] = unit;
 		unitIndex++;
 		oonit = { color: SFE.RED, pos: [19, 19] };
@@ -89,6 +93,7 @@ SFE.Game = function (options) {
 		unit.pOwner = 2;
 		unit.setPosition(19, 18);
 		unit.setMoves();
+		unit.setAttacks();
 		unitArray[unitIndex] = unit;
 		unitIndex++;
 		oonit = { color: SFE.RED, pos: [19, 18] };
@@ -99,6 +104,7 @@ SFE.Game = function (options) {
 		unit.pOwner = 2;
 		unit.setPosition(19, 17);
 		unit.setMoves();
+		unit.setAttacks();
 		unitArray[unitIndex] = unit;
 		unitIndex++;
 		oonit = { color: SFE.RED, pos: [19, 17] };
