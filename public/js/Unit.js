@@ -67,7 +67,7 @@ function Unit(unitClass) {
         this.position.z = posz;
     }
 
-    this.setMoves = function (unitArray)
+    this.setMoves = function ()
     {
         
         if (this.unitClass == "ranger" || this.unitClass == "Ranger")

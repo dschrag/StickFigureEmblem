@@ -2,16 +2,16 @@
 var unitArray = [];
 SFE.BoardController = function (options) {
 	'use strict';
-	
+
 	options = options || {};
-	
+
 	// WebGL Rendering Variables
 	var renderer, scene, camera, cameraController, projector;
-	
+
 	// Assets Variables
 	var lights = {};
 	var materials = {};
-	
+
 	// Board size
 	var tileSize = 10;
 	var boardLength = 20;
@@ -19,64 +19,71 @@ SFE.BoardController = function (options) {
 	var board = [];
 	var tiles = [];
 
-	
+
 	// Unit variables
 	var ranger, mage, warrior, gameboard, ground;
-	
+	var selectedUnit;
+
 	var containerEl = options.containerEl || null;
 	var assetsUrl = options.assetsUrl || '';
-	
+
 	this.drawBoard = function (callback) {
 		initEngine(); 											// initializes graphics renderer
 		initBoardArray();										// sets up gameboard array
-		initLights();	
-		initMaterials();							
+		initLights();
+		initMaterials();
 		initObjects(function () {								// initializes game board and units
             onAnimationFrame();
 			callback();
-        });		
+        });
 		initListeners();
 	};
-	
+
 	this.addUnit = function (oonit) {
-	    var unitMesh = new THREE.Mesh(ranger);
-	    //oonit.setModel(unitMesh);
+		var unitMesh;
+		if (oonit.unitClass == "ranger" || oonit.unitClass == "Ranger") {
+			unitMesh = new THREE.Mesh(ranger);
+		} else if (oonit.unitClass == "warrior" || oonit.unitClass == "Warrior") {
+			unitMesh = new THREE.Mesh(warrior);
+		} else {
+			unitMesh = new THREE.Mesh(mage);
+		}
+		//oonit.setModel(unitMesh);
 		var unitTeam = new THREE.Object3D();
-		
-		if (oonit.color === 1) {
+
+		if (oonit.pOwner === 1) {
 			unitTeam.color = SFE.BLUE;
-			unitMesh.material = materials.board;	
+			unitMesh.material = materials.blueteam;
 		} else {
 			unitTeam.color = SFE.RED;
-			unitMesh.material = materials.darkgrass;	
+			unitMesh.material = materials.redteam;
 		}
-		
+
 		var shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(tileSize, tileSize, 1, 1), materials.ground);
 		shadowPlane.rotation.x = -90 * Math.PI / 180;
-		
+
 		unitTeam.add(unitMesh);
 		unitTeam.add(shadowPlane);
-		
+
 		var vp = boardToWorld(oonit.position);
 		unitTeam.position.set(vp.x, vp.y, vp.z);
 		console.log("oonit.pos.x " + oonit.position.x);
 		console.log("oonit.pos.z " + oonit.position.z);
+		console.log("oonit moves: " + oonit.validMoves);
 		board[oonit.position.x][oonit.position.z] = unitTeam;
-		
-		scene.add(unitTeam);	
+
+		scene.add(unitTeam);
 	};
-	
+
 	function initEngine() {
 		var sceneWidth = containerEl.offsetWidth;
 		var sceneHeight = containerEl.offsetHeight;
 		console.log("Initialized sceneWidth: " + sceneWidth + "sceneHeight: " + sceneHeight);
-		
+
 		renderer = new THREE.WebGLRenderer({ antialias: true });
 		renderer.setSize(sceneWidth, sceneHeight);
 		console.log("Initialized renderer");
-        
-		projector = new THREE.Projector();
-		
+
 		scene = new THREE.Scene();
 		console.log("Initialized Scene");
 
@@ -85,100 +92,134 @@ SFE.BoardController = function (options) {
 		cameraController = new THREE.OrbitControls(camera, containerEl);
 		cameraController.target.set(100, -0.5, 100);
 		console.log("Initialized Camera");
-		
+
 		scene.add(camera);
 		containerEl.appendChild(renderer.domElement);
 	}
-	
+
 	function initBoardArray() {
         console.log("initing board array")
+		unitArray[10] = 0;
+		selectedUnit = unitArray[10];
 		var prnt = '';
 		for (var i = 0; i < boardLength; i++) {
 			board[i] = [boardWidth];
 			tiles[i] = [boardWidth];
 			for (var j = 0; j < boardWidth; j++) {
-				board[i][j] = 0;	
+				board[i][j] = 0;
 				prnt += board[i][j] + ',';
 			}
-			prnt += '\n'; 
+			prnt += '\n';
 		}
 		//console.log(prnt);
 	}
-	
+
 	function initLights() {
 	    // Sun
         console.log("Praise the Sun")
 		lights.topLight = new THREE.PointLight();
 		lights.topLight.position.set(tileSize * 4, 150, tileSize * 4);
 		lights.topLight.intensity = 1.0;
-		
+
 		scene.add(lights.topLight);
 	}
-	
+
 	function initMaterials() {
-        console.log("Initing Materials")
-		materials.board = new THREE.MeshBasicMaterial({
-			map: THREE.ImageUtils.loadTexture(assetsUrl + 'board.jpg')
+	materials.board = new THREE.MeshBasicMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'board.jpg')
+	});
+
+	materials.ground = new THREE.MeshBasicMaterial({
+				transparent: true,
+				map: THREE.ImageUtils.loadTexture(assetsUrl + 'ground.png')
 		});
-		
-		materials.ground = new THREE.MeshBasicMaterial({
-	        transparent: true,
-	        map: THREE.ImageUtils.loadTexture(assetsUrl + 'ground.png')
-	    });
-		
-		materials.darkgrass = new THREE.MeshLambertMaterial({
-			map: THREE.ImageUtils.loadTexture(assetsUrl + 'darkgrass.jpg')
-		});
-		
-		materials.lightgrass = new THREE.MeshLambertMaterial({
-			map: THREE.ImageUtils.loadTexture(assetsUrl + 'lightgrass.jpg')
-		});
-	}
+
+	materials.darkgrass = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'darkgrass.jpg')
+	});
+
+	materials.darkgrass_red = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'darkgrass_red.jpg')
+	});
+
+	materials.darkgrass_green = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'darkgrass_green.jpg')
+	});
+
+	materials.lightgrass = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'lightgrass.jpg')
+	});
+
+	materials.lightgrass_red = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'lightgrass_red.jpg')
+	});
+
+	materials.lightgrass_green = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'lightgrass_green.jpg')
+	});
+
+	materials.redteam = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'blueteam.jpg')
+	});
+
+	materials.blueteam = new THREE.MeshLambertMaterial({
+		map: THREE.ImageUtils.loadTexture(assetsUrl + 'redteam.jpg')
+	});
+
+}
 
 	function initObjects(callback) {
         console.log("Initing Objects")
 		var loader = new THREE.JSONLoader();
-		var totalObjectsToLoad = 2;
+		var totalObjectsToLoad = 4;
 		var loadedObjects = 0;
-		
+
 		function checkLoad() {
 			loadedObjects++;
-			
+
 			if (loadedObjects === totalObjectsToLoad && callback) {
 				console.log("Calling Back");
-				callback();	
+				callback();
 			}
 		}
-		
+
 		loader.load(assetsUrl + 'board.js', function (geom) {
 			gameboard = new THREE.Mesh(geom, materials.board);
 			gameboard.position.y = -0.02;
 			scene.add(gameboard);
 			checkLoad();
 		});
-		
+
 		loader.load(assetsUrl + 'ranger.json', function (geom) {
 			ranger = geom;
-			//ranger1.position.set(5,0,5);
-			//scene.add(ranger1);
 			checkLoad();
 		});
-		
+
+		loader.load(assetsUrl + 'warrior.json', function (geom) {
+			warrior = geom;
+			checkLoad();
+		});
+
+		loader.load(assetsUrl + 'mage.json', function (geom) {
+			mage = geom;
+			checkLoad();
+		});
+
 		ground = new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 1, 1), materials.ground);
 		ground.position.set(tileSize * 4, -1.52, tileSize * 4);
 		ground.rotation.x = -90 * Math.PI / 180;
 		scene.add(ground);
-		
+
 		var tileMaterial = materials.darkgrass;
-		
+
 		for (var i = 0; i < boardLength; i++) {
 			for (var j = 0; j < boardWidth; j++) {
 				if ((i + j) % 2 === 0) {
-					tileMaterial = materials.lightgrass;	
+					tileMaterial = materials.lightgrass;
 				} else {
 					tileMaterial = materials.darkgrass;
 				}
-			
+
 				var tile = new THREE.Mesh(new THREE.PlaneGeometry(tileSize, tileSize, 1, 1), tileMaterial);
 				tile.position.x = j * tileSize + tileSize / 2;
 				tile.position.z = i * tileSize + tileSize / 2;
@@ -186,18 +227,18 @@ SFE.BoardController = function (options) {
 				tile.rotation.x = -90 * Math.PI / 180;
 				tiles[i][j] = tile;
 				//console.log("[" + i + "," + j + "]: " + "(" + tile.position.x + "," + tile.position.z + ")");
-				
+
 				scene.add(tile);
 			}
 		}
-	
-		callback();	
+
+		callback();
 	}
-	
+
 	function initListeners() {
         console.log("ininting listeners")
 		var domElement = renderer.domElement;
-		
+
 		domElement.addEventListener('mousedown', onMouseDown, false);
 		domElement.addEventListener('mouseup', onMouseUp, false);
 	}
@@ -206,16 +247,16 @@ SFE.BoardController = function (options) {
 		requestAnimationFrame(onAnimationFrame);
 		//console.log(camera.getWorldDirection());
 		cameraController.update();
-		renderer.render(scene, camera);	
+		renderer.render(scene, camera);
 	}
-	
+
 	function boardToWorld(pos) {
 	    console.log("Board to world with " + pos);
 		var x = (1 + pos.z) * tileSize - tileSize / 2;
 		var z = (1 + pos.x) * tileSize - tileSize / 2;
-		return new THREE.Vector3(x, 0, z);	
+		return new THREE.Vector3(x, 0, z);
 	}
-	
+
 	function worldToBoard(pos) {
 		console.log("world to board with " + pos.x + ", " + pos.z);
 		var i = boardLength - Math.ceil((tileSize * boardLength - pos.z) / tileSize);
@@ -223,33 +264,78 @@ SFE.BoardController = function (options) {
 		console.log(i);
 		if (j === -0) j = 0;
 		console.log(j);
-		
+
 		if (i > (boardLength - 1) || i < 0 || j > (boardWidth - 1) || j < 0 || isNaN(i) || isNaN(j)) {
-			return false;	
+			return false;
 		}
 		var position = {x:0, z:0};
 		position.x = i;
 		position.z = j;
 		return position;
 	}
-	
-	function onMouseDown(event) {
-		var mouse3D = getMouse3D(event);
-		
-		if (isMouseOnBoard(mouse3D)) {
-			if (isUnitOnMousePosition(mouse3D)) {
-				calculateActions(worldToBoard(mouse3D));
-				console.log("Yay");
-				//renderer.domElement.addeventListener('mousemove', onMouseMove, false);	
+
+	function resetTiles() {
+		var tileMaterial;
+
+		for (var i = 0; i < boardLength; i++) {
+			for (var j = 0; j < boardWidth; j++) {
+				if ((i + j) % 2 === 0) {
+					tileMaterial = materials.lightgrass;
+				} else {
+					tileMaterial = materials.darkgrass;
+				}
+
+				tiles[i][j].material = tileMaterial;
 			}
-			cameraController.userRotate = false;	
 		}
 	}
-	
-	function onMouseUp(event) {
-		cameraController.userRotate = true;	
+
+	function tileIsMovableTo(t) {
+		//console.log(t.z);
+	if 	(tiles[t.x][t.z].material === materials.darkgrass_green || tiles[t.x][t.z].material === materials.lightgrass_green) {
+		console.log("Can move here");
+		return true;
+	} else {
+		return false;
 	}
+}
+
+function onMouseDown(event) {
+var mouse3D = getMouse3D(event);
+
+if (isMouseOnBoard(mouse3D)) {
+	if (isUnitOnMousePosition(mouse3D) && selectedUnit === unitArray[10]) { // THIS IS THE FIRST CLICK, where a unit is not selected
+		console.log(unitArray);
+		setSelectedUnit(worldToBoard(mouse3D));
+		console.log(selectedUnit.validMoves);
+		calculateActions(worldToBoard(mouse3D), selectedUnit.validMoves);
 	
+	} else if (selectedUnit !== unitArray[10]) { // IF A UNIT IS SELECTED THOUGH
+		console.log("Unit is selected");
+		var tileToMoveTo = worldToBoard(mouse3D); 				// Get the position of the tile the unit wants to go to
+		if (board[tileToMoveTo.x][tileToMoveTo.z] === 0 && tileIsMovableTo(tileToMoveTo)) { // if there is not a unit in the board at that position, and the tile is able to be moved to (based off the units available moves
+			var op = selectedUnit.position;
+			var vp = boardToWorld(tileToMoveTo); 							// get new coordinates for units position
+			board[op.x][op.z].position.set(vp.x, vp.y, vp.z); 			// set units new position
+			board[tileToMoveTo.x][tileToMoveTo.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
+			board[op.x][op.z] = 0;
+			selectedUnit.setPosition(tileToMoveTo.x, tileToMoveTo.z);
+			//selectedUnit = 0;
+		}
+		resetTiles();
+		selectedUnit = unitArray[10];
+		console.log("Selected unit: " + selectedUnit);
+	}
+
+
+	cameraController.userRotate = false;
+}
+}
+
+	function onMouseUp(event) {
+		cameraController.userRotate = true;
+	}
+
 	function getMouse3D(mouseEvent) {
         var x, y;
         //
@@ -260,7 +346,7 @@ SFE.BoardController = function (options) {
             x = mouseEvent.layerX;
             y = mouseEvent.layerY;
         }
-     
+
         var pos = new THREE.Vector3(0, 0, 0);
         var pMouse = new THREE.Vector3(
             (x / renderer.domElement.width) * 2 - 1,
@@ -268,16 +354,16 @@ SFE.BoardController = function (options) {
         //
         //projector.unprojectVector(pMouse, camera);
 		pMouse.unproject(camera);
-     
+
         var cam = camera.position;
         var m = pMouse.y / ( pMouse.y - cam.y );
-     
+
         pos.x = pMouse.x + ( cam.x - pMouse.x ) * m;
         pos.z = pMouse.z + ( cam.z - pMouse.z ) * m;
-     
+
         return pos;
     }
-	
+
 	function isMouseOnBoard(pos) {
         if (pos.x >= 0 && pos.x <= tileSize * boardLength &&
             pos.z >= 0 && pos.z <= tileSize * boardWidth) {
@@ -287,40 +373,46 @@ SFE.BoardController = function (options) {
             return false;
         }
     }
-	
+
 	function isUnitOnMousePosition(pos) {
 		var boardPos = worldToBoard(pos);
-		console.log("mouseBoardPos: " + boardPos[0] + " " + boardPos[1]);
-		
+		console.log("mouseBoardPos: " + boardPos.x + " " + boardPos.z);
+
 		return isUnitAtTile(boardPos);
 	}
-	
+
 	var unitPossibleMoves = [];
 
-	function calculateActions (pos) {
-	
+	function calculateActions (pos, unitPossibleMoves) {
+/*
 		unitPossibleMoves.push({x: 1, z: 1});
-		unitPossibleMoves.push({x: 1, z: 2});
-		unitPossibleMoves.push({x: 0, z: 1});
-		unitPossibleMoves.push({x: 0, z: 2});
-		
-		console.log(pos);
-	  // check each possible move for the unit
-	  for (var i = 0; i < unitPossibleMoves.length; i++) {
-		var movePos = unitPossibleMoves[i];
-		var tilePos = [];
-		tilePos[0] = pos[0] + movePos.x;
-		tilePos[1] = pos[1] + movePos.z;
-		if (tilePos[0] >= 0 && tilePos[0] < 20 && tilePos[1] >= 0 && tilePos[1] < 20) {
-			if (!isUnitAtTile(tilePos)) {
-				console.log("movePos.x: " + movePos.x + " z: " + movePos.z + ", tilePos: " + tilePos[0] + " z: " + tilePos[1]);
-				tiles[tilePos[0]][tilePos[1]].material = materials.board;	
+	unitPossibleMoves.push({x: 1, z: 2});
+	unitPossibleMoves.push({x: 0, z: 1});
+	unitPossibleMoves.push({x: 0, z: 2});
+*/
+	console.log("CALCULATING AVAILABLE ACTIONS");
+	console.log(unitPossibleMoves);
+	// check each possible move for the unit
+	for (var i = 0; i < selectedUnit.validMoves.length; i++) {
+	var movePos = unitPossibleMoves[i];
+	var tilePos = {};
+	tilePos.x = pos.x + movePos.x;
+	tilePos.z = pos.z + movePos.z;
+	if (tilePos.x >= 0 && tilePos.x < 20 && tilePos.z >= 0 && tilePos.z < 20) {
+		if (!isUnitAtTile(tilePos)) {
+			console.log("movePos.x: " + movePos.x + " z: " + movePos.z + ", tilePos: " + tilePos.x + " z: " + tilePos.z);
+			if ((tilePos.x + tilePos.z) % 2 === 0 ) {
+				tiles[tilePos.x][tilePos.z].material = materials.lightgrass_green;
+			} else {
+				tiles[tilePos.x][tilePos.z].material = materials.darkgrass_green;
 			}
+
 		}
-	  }
-  
+	}
+	}
+
 }
-	
+
 	function isUnitAtTile(boardPos) {
 	    console.log("is unit at boardPos: " + boardPos);
 	    console.log("boardPos.x " + boardPos.x);
@@ -330,12 +422,22 @@ SFE.BoardController = function (options) {
 		console.log("boards x,z" + board[posx][posz]);
 		if (boardPos && (board[posx][posz] !== 0)) {
 			console.log("Unit here! Belongs to: " + board[posx][posz].color);
-			//tiles[boardPos[0]][boardPos[1]].material = materials.board;
 			return true;
 		} else {
             console.log("Not found")
 			return false;
 		}
 	}
+	
+	function setSelectedUnit(boardPos) {
+		for (var i = 0; i < 6; i++) {
+			if (boardPos.x === unitArray[i].position.x && boardPos.z === unitArray[i].position.z) {
+				console.log("Setting Selected Unit");
+				selectedUnit = unitArray[i];
+				//console.log(selectedUnit.validMoves);
+				return true;	
+			}
+		}
+		return false;
+	}
 };
-
