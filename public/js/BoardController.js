@@ -1,5 +1,10 @@
 // Javascript document
 var unitArray = [];
+var Player1 = new Player(1);
+var Player2 = new Player(2);
+var currentPlayer; 
+var unitGUI, turnGUI;
+
 SFE.BoardController = function (options) {
 	'use strict';
 
@@ -35,7 +40,8 @@ SFE.BoardController = function (options) {
 		initObjects(function () {								// initializes game board and units
             onAnimationFrame();
 			callback();
-        });
+		});
+		initGUIS();
 		initListeners();
 	};
 
@@ -74,6 +80,38 @@ SFE.BoardController = function (options) {
 
 		scene.add(unitTeam);
 	};
+
+	function initGUIS() {
+	    currentPlayer = Player1;
+	    turnGUI = new dat.GUI();
+	    var text = {
+	        number: currentPlayer.playerNum,
+	        endTurn: function () { endTurn();}
+	    };
+
+	    turnGUI.add(text, 'number').name("Currently Playing");
+	    turnGUI.add(text, 'endTurn').name("End Turn");
+
+
+	}
+
+	function endTurn() {
+	    if (currentPlayer == Player1) {
+	        currentPlayer = Player2;
+	    }
+	    else
+	        currentPlayer = Player1;
+
+	    turnGUI.destroy();
+	    turnGUI = new dat.GUI();
+	    var text = {
+	        number: currentPlayer.playerNum,
+	        endTurn: function () { endTurn(); }
+	    };
+
+	    turnGUI.add(text, 'number').name("Currently Playing");
+	    turnGUI.add(text, 'endTurn').name("End Turn");
+	}
 
 	function initEngine() {
 		var sceneWidth = containerEl.offsetWidth;
@@ -331,7 +369,7 @@ function onMouseDown(event) {
                 calculateActions(worldToBoard(mouse3D), selectedUnit.validMoves, "move");
 
 	
-	    } else if (selectedUnit !== unitArray[10]) { // IF A UNIT IS SELECTED THOUGH
+	    } else if (selectedUnit !== undefined) { // IF A UNIT IS SELECTED THOUGH
 		    //console.log("Unit is selected");
 	        var tileSelected = worldToBoard(mouse3D); 				// Get the position of the tile the unit wants to go to
 	        if (board[tileSelected.x][tileSelected.z] === 0 && tileIsMovableTo(tileSelected)) { // if there is not a unit in the board at that position, and the tile is able to be moved to (based off the units available moves
@@ -380,8 +418,14 @@ function onMouseDown(event) {
 
 	            }
 	        //}
+            console.log("wrapping up")
 		    resetTiles();
 		    selectedUnit = unitArray[10];
+		    if (unitGUI != undefined) {
+                console.log("gonna destroy the gui")
+                unitGUI.destroy();
+                console.log("done")
+		    }
 		
 	    }
 
@@ -549,14 +593,55 @@ function onMouseDown(event) {
 	}
 	
 	function setSelectedUnit(boardPos) {
-		for (var i = 0; i < 6; i++) {
+	    for (var i = 0; i < unitArray.length; i++) {
+	        console.log("unitArray.pOwner: " + unitArray[i].pOwner)
 			if (boardPos.x === unitArray[i].position.x && boardPos.z === unitArray[i].position.z) {
-				//console.log("Setting Selected Unit");
-				selectedUnit = unitArray[i];
+			    console.log("Setting Selected Unit");
+			    console.log("current player num");
+			    console.log("" + currentPlayer.playerNum)
+                console.log("unitArray.pOwner: " + unitArray[i].pOwner)
+			    if (unitArray[i].pOwner == currentPlayer.playerNum) {
+			        console.log("Found current player's unit");
+			        selectedUnit = unitArray[i];
+			        spawnUnitGUI(selectedUnit);
+			        return true;
+			    }
+			    else {
+			        var notyourunit = unitArray[i];
+                    spawnUnitGUI(notyourunit)
+                    console.log("Not current player's unit")
+			    }
 				//console.log(selectedUnit.validMoves);
-				return true;	
+			    //return true;
 			}
 		}
 		return false;
+	}
+
+	function spawnUnitGUI(unit) {
+
+	    unitGUI = new dat.GUI();
+	    var trump;
+	    if (unit.unitClass == "warrior" || unit.unitClass == "Warrior") {
+            trump = "Ranger"
+	    }
+	    if (unit.unitClass == "ranger" || unit.unitClass == "Ranger"){
+            trump  = "Mage"
+	    }
+	    if (unit.unitClass == "mage" || unit.unitClass == "Mage") {
+	        trump = "Warrior";
+	    }
+	    var text = {
+	        job: unit.unitClass, 
+	        health: unit.health,
+	        owner: unit.pOwner,
+            trump: trump
+
+	    };
+
+	    unitGUI.add(text, 'owner').name("Owned by Player ");
+	    unitGUI.add(text, 'job').name("Unit class");
+	    unitGUI.add(text, 'health').name("Current Health");
+	    unitGUI.add(text, 'trump').name("Trumps units of this type");
 	}
 };

@@ -204,7 +204,9 @@ function Unit(unitClass) {
             Ranger trumps Mage
          */
         console.log("Checking crits")
-        if (unit2.unitClass == "Warrior" || unit2.unitClass == "warrior") {
+        console.log("unit2 class: " + unit2.unitClass);
+        console.log("unit1 class: " + unit1.unitClass);
+        if (unit1.unitClass == "Warrior" || unit1.unitClass == "warrior") {
             if (unit2.unitClass == "Ranger" || unit2.unitClass == "ranger") {
                 console.log("Critical Damage!")
                 return true;
@@ -213,7 +215,7 @@ function Unit(unitClass) {
                 return false;
             }
         }
-        else if (unit1.unitClass == "Mage" || unit1.unitClass == "mage") {
+        if (unit1.unitClass == "Mage" || unit1.unitClass == "mage") {
             if (unit2.unitClass == "Warrior" || unit2.unitClass == "warrior") {
                 console.log("Critical Damage!")
                 return true;
@@ -221,9 +223,9 @@ function Unit(unitClass) {
             else
                 return false;
         }
-        else {
+        if (unit1.unitClass == "Ranger" || unit1.unitClass == "ranger"){
             // assuming the last class is Ranger
-            if (unit1.unitClass == "Mage" || unit1.unitClass == "mage") {
+            if (unit2.unitClass == "Mage" || unit2.unitClass == "mage") {
                 console.log("Critical Damage!")
                 return true;
             }
