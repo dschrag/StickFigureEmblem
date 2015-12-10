@@ -28,7 +28,8 @@ SFE.BoardController = function (options) {
 	var ranger, mage, warrior, gameboard, ground, skyboxMesh;
 	var selectedUnit, notyourunit, hoveredUnit;
 	var hoverGUIContainer;
-
+	
+	var combatLog, numMessages;
 	var containerEl = options.containerEl || null;
 	var assetsUrl = options.assetsUrl || '';
 
@@ -88,7 +89,6 @@ SFE.BoardController = function (options) {
 		//console.log("oonit.pos.z " + oonit.position.z);
 		//console.log("oonit moves: " + oonit.validMoves);
 		board[oonit.position.x][oonit.position.z] = unitTeam;
-
 		scene.add(unitTeam);
 	};
 
@@ -128,7 +128,7 @@ SFE.BoardController = function (options) {
 	    for (i = 0; i < unitArray.length; i++) {
 	        unitArray[i].canAttack = true;
 	        unitArray[i].canMove = true;
-	    }
+	    }		
 
 	}
 
@@ -152,6 +152,11 @@ SFE.BoardController = function (options) {
 
 		scene.add(camera);
 		containerEl.appendChild(renderer.domElement);
+		
+		combatLog = document.getElementById("combatLog");
+		combatLog.innerHTML = "Combat Log";
+		
+		console.log(combatLog);
 	}
 
 	function initBoardArray() {
@@ -245,6 +250,11 @@ SFE.BoardController = function (options) {
 	});
 
 }
+
+	function sendToCombatLog(data) {
+		combatLog.innerHTML += "<br />" + data;
+		combatLog.scrollTop = combatLog.scrollHeight;
+	}
 
 	function initSkybox() {
 		var skyboxURLs = [
@@ -506,14 +516,14 @@ function onMouseDown(event) {
 	        var tileSelected = worldToBoard(mouse3D); 				// Get the position of the tile the unit wants to go to
 	        if (board[tileSelected.x][tileSelected.z] === 0 && tileIsMovableTo(tileSelected)) { // if there is not a unit in the board at that position, and the tile is able to be moved to (based off the units available moves
 	            if (selectedUnit.canMove) {
-	                var op = selectedUnit.position;
-	                var vp = boardToWorld(tileSelected); 							// get new coordinates for units position
+	                var op = selectedUnit.position;								// original position (world)
+	                var vp = boardToWorld(tileSelected); 						// get new coordinates for units position
 	                board[op.x][op.z].position.set(vp.x, op.y, vp.z); 			// set units new position
 	                board[tileSelected.x][tileSelected.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
 	                board[op.x][op.z] = 0;
 	                selectedUnit.setPosition(tileSelected.x, tileSelected.z);
 	                selectedUnit.cantMove();
-	                //selectedUnit = 0;
+	                sendToCombatLog("Player " + selectedUnit.pOwner + "'s " + selectedUnit.unitClass + " has moved");
 	            }
 	            else 
 	                console.log("Unit has already moved! ")
@@ -521,13 +531,20 @@ function onMouseDown(event) {
 	        if (board[tileSelected.x][tileSelected.z] !== 0 && tileisAttackable(tileSelected)) {
 	            if (selectedUnit.canAttack) {
 	                var enemy = findUnit(tileSelected);
-	                console.log("Enemy found belonging to " + enemy.pOwner + " with class " + enemy.unitClass);
+					sendToCombatLog("Player " + selectedUnit.pOwner + "'s " + selectedUnit.unitClass + " (HP: " + selectedUnit.health + ") has attacked " +
+					"enemy's " + enemy.unitClass + " (HP: " + enemy.health + ")");
+					
+					//console.log("Enemy's " + enemy.unitClass + " (HP: " + enemy.health + ")");
 	                console.log("FIGHT!")
 	                selectedUnit.combat(selectedUnit, enemy, true);
 	                selectedUnit.cantAttack();
 	                console.log("Done fighting")
 	                console.log("Enemy health: " + enemy.health);
 	                console.log("Ally health: " + selectedUnit.health);
+					sendToCombatLog("Player " + enemy.pOwner + "'s " + enemy.unitClass + "HP: " + enemy.health + 
+					", Player " + selectedUnit.pOwner + "'s " + selectedUnit.unitClass + "HP: " + selectedUnit.health);
+					
+					
 	                if (enemy.isDead) {
 	                    console.log("It's time for this unit to die.")
 	                    board[tileSelected.x][tileSelected.z] = 0;
@@ -537,7 +554,8 @@ function onMouseDown(event) {
 	                    else {
 	                        Player2.killUnit();
 	                    }
-						 checkWinningState();
+						sendToCombatLog("Player " + enemy.pOwner + "'s " + enemy.unitClass +  " died!");
+						checkWinningState();
 	                }
 	                if (selectedUnit.isDead) {
 	                    console.log("An ally has fallen while fighting")
@@ -551,6 +569,7 @@ function onMouseDown(event) {
 	                    else {
 	                        Player2.killUnit();
 	                    }
+						sendToCombatLog("Player " + selectedUnit.pOwner + "'s " + selectedUnit.unitClass + " has died!");
 	                }
 
 	            }

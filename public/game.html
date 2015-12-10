@@ -10,14 +10,25 @@
 		}
 		
 		#moveGUI { float: left; bottom:0;height:auto; left: 2px }
-	</style>
+		#combatLog {
+			position:fixed;
+			left: 0;
+			bottom: 0;
+			width: 20%;
+			height: 20%;
+			color:#CCC;
+			background:rgba(51,51,51,0.5);
+			overflow:auto;
+		}
+    </style>
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Stick Figure Emblem</title>
 </head>
 
 <body>
-	<div id="hoverGUI" class = 'moveGUI'>hello</div>
+	<div id="hoverGUI" class = 'moveGUI'></div>
+    <div id="combatLog" class='combatLog'></div>
 	<div id="boardContainer"></div>
 
     <script src="js/three/three.js"></script>
