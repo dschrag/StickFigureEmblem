@@ -3,7 +3,7 @@ var unitArray = [];
 var Player1 = new Player(1);
 var Player2 = new Player(2);
 var currentPlayer; 
-var unitGUI, turnGUI;
+var unitGUI, unitHoverGUI, turnGUI;
 var turnsElapsed = 0;
 SFE.BoardController = function (options) {
 	'use strict';
@@ -25,8 +25,9 @@ SFE.BoardController = function (options) {
 	var tiles = [];
 
 	// Unit variables
-	var ranger, mage, warrior, gameboard, ground;
-	var selectedUnit, notyourunit;
+	var ranger, mage, warrior, gameboard, ground, skyboxMesh;
+	var selectedUnit, notyourunit, hoveredUnit;
+	var hoverGUIContainer;
 
 	var containerEl = options.containerEl || null;
 	var assetsUrl = options.assetsUrl || '';
@@ -41,6 +42,7 @@ SFE.BoardController = function (options) {
 		initBoardArray();										// sets up gameboard array
 		initLights();
 		initMaterials();
+		initSkybox();
 		initObjects(function () {								// initializes game board and units
             onAnimationFrame();
 			callback();
@@ -74,12 +76,14 @@ SFE.BoardController = function (options) {
 		var shadowPlane = new THREE.Mesh(new THREE.PlaneGeometry(tileSize, tileSize, 1, 1), materials.ground);
         oonit.setShadow(shadowPlane)
 		shadowPlane.rotation.x = -90 * Math.PI / 180;
+		shadowPlane.position.y = -4.5;
+		oonit.position.y = 4.5;
 
 		unitTeam.add(unitMesh);
 		unitTeam.add(shadowPlane);
 
 		var vp = boardToWorld(oonit.position);
-		unitTeam.position.set(vp.x, vp.y, vp.z);
+		unitTeam.position.set(vp.x, oonit.position.y, vp.z);
 		//console.log("oonit.pos.x " + oonit.position.x);
 		//console.log("oonit.pos.z " + oonit.position.z);
 		//console.log("oonit moves: " + oonit.validMoves);
@@ -98,8 +102,9 @@ SFE.BoardController = function (options) {
 
 	    turnGUI.add(text, 'number').name("Currently Playing");
 	    turnGUI.add(text, 'endTurn').name("End Turn");
-
-
+		
+		var hoverGUIContainer = document.createElement('div');
+		hoverGUIContainer.className = "hover-gui";
 	}
 
 	function endTurn() {
@@ -139,7 +144,7 @@ SFE.BoardController = function (options) {
 		scene = new THREE.Scene();
 		console.log("Initialized Scene");
 
-		camera = new THREE.PerspectiveCamera(45, sceneWidth / sceneHeight, 1, 1000);
+		camera = new THREE.PerspectiveCamera(45, sceneWidth / sceneHeight, 1, 2000);
 		camera.position.set(100, 100, 300);
 		cameraController = new THREE.OrbitControls(camera, containerEl);
 		cameraController.target.set(100, -0.5, 100);
@@ -241,6 +246,26 @@ SFE.BoardController = function (options) {
 
 }
 
+	function initSkybox() {
+		var skyboxURLs = [
+	 assetsUrl + 'ely_hills/hills_rt.jpg', assetsUrl + 'ely_hills/hills_lf.jpg', assetsUrl + 'ely_hills/hills_up.jpg', assetsUrl + 'ely_hills/hills_dn.jpg', assetsUrl + 'ely_hills/hills_bk.jpg', assetsUrl + 'ely_hills/hills_ft.jpg'
+	];
+		// px, nx, py, ny, pz, nz, right, left, up, down, front, back
+		var materialArray = [];
+		for (var i = 0; i < 6; i++) {
+			materialArray.push(new THREE.MeshBasicMaterial({
+                 map: THREE.ImageUtils.loadTexture(skyboxURLs[i]),
+                 side: THREE.BackSide
+            }));	
+	}
+	
+	var skyMaterial = new THREE.MeshFaceMaterial(materialArray);
+	var skyGeometry = new THREE.CubeGeometry(1900, 1900, 1900);
+	var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
+	
+	scene.add(skyBox);
+	}
+
 	function initObjects(callback) {
         console.log("Initing Objects")
 		var loader = new THREE.JSONLoader();
@@ -259,6 +284,8 @@ SFE.BoardController = function (options) {
 		loader.load(assetsUrl + 'board.js', function (geom) {
 			gameboard = new THREE.Mesh(geom, materials.board);
 			gameboard.position.y = -0.02;
+			gameboard.scale.x = 2.5;
+			gameboard.scale.z = 2.5;
 			scene.add(gameboard);
 			checkLoad();
 		});
@@ -278,11 +305,11 @@ SFE.BoardController = function (options) {
 			checkLoad();
 		});
 
-		ground = new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 1, 1), materials.ground);
+		/*ground = new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 1, 1), materials.ground);
 		ground.position.set(tileSize * 4, -1.52, tileSize * 4);
 		ground.rotation.x = -90 * Math.PI / 180;
 		scene.add(ground);
-
+*/
 		var tileMaterial = materials.darkgrass;
 
 		for (var i = 0; i < boardLength; i++) {
@@ -314,7 +341,7 @@ SFE.BoardController = function (options) {
 
 		domElement.addEventListener('mousedown', onMouseDown, false);
 		domElement.addEventListener('mouseup', onMouseUp, false);
-		//domElement.addEventListener('mouseHover', onMouseHover, false);
+		domElement.addEventListener('mousemove', onMouseMove, false);
 	}
 
 	function initAudio() {
@@ -438,6 +465,24 @@ SFE.BoardController = function (options) {
 	        return false;
 	    }
 	}
+	
+	function onMouseMove(event) {
+		var mouse3D = getMouse3D(event);
+		if (isUnitOnMousePosition(mouse3D)) {
+			var unit = findUnit(worldToBoard(mouse3D));
+			if (hoveredUnit === undefined) {
+				spawnUnitHoverGUI(unit);
+				hoveredUnit = unit;	
+			}
+			else if (unit.position !== hoveredUnit.position) {
+				unitHoverGUI.destroy();	
+				spawnUnitHoverGUI(unit);
+				hoveredUnit = unit;
+			}
+				
+		}
+		
+	}
 
 
 function onMouseDown(event) {
@@ -463,7 +508,7 @@ function onMouseDown(event) {
 	            if (selectedUnit.canMove) {
 	                var op = selectedUnit.position;
 	                var vp = boardToWorld(tileSelected); 							// get new coordinates for units position
-	                board[op.x][op.z].position.set(vp.x, vp.y, vp.z); 			// set units new position
+	                board[op.x][op.z].position.set(vp.x, op.y, vp.z); 			// set units new position
 	                board[tileSelected.x][tileSelected.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
 	                board[op.x][op.z] = 0;
 	                selectedUnit.setPosition(tileSelected.x, tileSelected.z);
@@ -740,5 +785,38 @@ function onMouseDown(event) {
 	    unitGUI.add(text, 'job').name("Unit class");
 	    unitGUI.add(text, 'health').name("Current Health");
 	    unitGUI.add(text, 'trump').name("Trumps units of this type");
+	}
+	
+	function spawnUnitHoverGUI(unit) {
+
+	    unitHoverGUI = new dat.GUI({autoplace: false});
+		
+	    var trump;
+	    if (unit.unitClass == "warrior" || unit.unitClass == "Warrior") {
+            trump = "Ranger"
+	    }
+	    if (unit.unitClass == "ranger" || unit.unitClass == "Ranger"){
+            trump  = "Mage"
+	    }
+	    if (unit.unitClass == "mage" || unit.unitClass == "Mage") {
+	        trump = "Warrior";
+	    }
+	    var text = {
+	        job: unit.unitClass, 
+	        health: unit.health,
+	        owner: unit.pOwner,
+            trump: trump
+
+	    };
+
+	    unitHoverGUI.add(text, 'owner').name("Owned by Player ");
+	    unitHoverGUI.add(text, 'job').name("Unit class");
+	    unitHoverGUI.add(text, 'health').name("Current Health");
+	    unitHoverGUI.add(text, 'trump').name("Trumps units of this type");
+		console.log(unitHoverGUI.domElement);
+		
+		var dv = document.getElementById("hoverGUI");
+		console.log(dv);
+		unitHoverGUI.domElement.id = "moveGUI";
 	}
 };

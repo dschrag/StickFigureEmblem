@@ -2,12 +2,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<link rel="stylesheet" type="text/css" href="css/style.css" />
+    <style>
+		.moveGUI{ 
+			position: absolute;
+			top: 10px;
+			left: 10px;
+		}
+		
+		#moveGUI { float: left; bottom:0;height:auto; left: 2px }
+	</style>
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Stick Figure Emblem</title>
 </head>
 
 <body>
+	<div id="hoverGUI" class = 'moveGUI'>hello</div>
 	<div id="boardContainer"></div>
 
     <script src="js/three/three.js"></script>
