@@ -3,6 +3,7 @@
    Unit Class documentation
    Written by:
         Daniel Miller (dmiller4991@gmail.com)
+        Derek Schrag (dschrag@purdue.edu)
    Variables:
         var health; 
 	    var baseDamage;
@@ -36,21 +37,20 @@ function Unit(unitClass) {
         // Warrior specific attributes. 
 
         this.health = 250; // strongest health
-
+        //this.health = 1;
     }
     else if (unitClass == "mage" || unitClass == "Mage") {
         // Mage specific attributes. 
 
-        // I took the average of 250 + 125 to try and rounded to the nearest 10's place
-        // so this class could reflect a balance of the two other classes. 
+        // decrementing by 60
         this.health = 190;
-
+        //this.health = 1;
     }
     else if (unitClass == "ranger" || unitClass == "Ranger") {
         // Ranger specific attributes
 
         this.health = 130 // weakest health. 
-
+        //this.health = 1;
     }
     else {
         // not sure what to do here. 

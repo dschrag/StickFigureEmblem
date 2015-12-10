@@ -108,7 +108,8 @@ SFE.BoardController = function (options) {
 	}
 
 	function endTurn() {
-	    turnsElapsed++;
+	    //turnsElapsed++;
+	    currentPlayer.changeTurn();
 	    if (currentPlayer == Player1) {
 	        currentPlayer = Player2;
 	    }
@@ -381,23 +382,36 @@ SFE.BoardController = function (options) {
 	}
 	
 	function sendScore(name, score) {
+	    //console.log("sending score");
 		var xmlHttp = new XMLHttpRequest();
 		var scoreURL = "/save_score?name=" + name + "&score=" + score;
    		xmlHttp.open( "GET", scoreURL, false ); // false for synchronous request
-    	xmlHttp.send( null );
+   		xmlHttp.send(null);
     	return xmlHttp.responseText;
 	}
 
 	function checkWinningState() {
 	    if (Player1.numUnits == 0) {
 	        Player2.winner = true;
-			sendToCombatLog("This game's winner is: Player 2!");
-			sendScore("Faker", 2000);	    
+	        sendToCombatLog("This game's winner is: Player 2!");
+	        console.log("Gonna send a score");
+	        Player2.calculateScore();
+	        console.log("Player2 score:");
+	        console.log(Player2.score);
+	        var finalScore = Player2.score;
+	        sendScore("Grr", finalScore);
+            //console.log("done w/ GRR")
 		}
 	    else if (Player2.numUnits == 0) {
 	        Player1.winner = true;
-			sendToCombatLog("This game's winner is: Player 1!");
-	     	sendScore("Ryu", 2000);
+	        sendToCombatLog("This game's winner is: Player 1!");
+	        console.log("Gonna send a score");
+	        Player1.calculateScore();
+	        console.log("Player1 score:");
+	        console.log(Player1.score);
+	        var finalScore = Player1.score;
+	        sendScore("Seh", finalScore);
+            //console.log("done w/ SEH")
 		   // alert("Player 1 Wins! Please refresh the page");
 	    }
 		
@@ -708,8 +722,8 @@ function onMouseDown(event) {
 	    var unit = undefined;
 	    var i = 0;
 	    for (i = 0; i < unitArray.length; i++) {
-	        console.log(position.x);
-	        console.log(position.z);
+	        //console.log(position.x);
+	        //console.log(position.z);
 
 	        var posx = unitArray[i].position.x;
 	        var posz = unitArray[i].position.z;
