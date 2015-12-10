@@ -168,7 +168,28 @@ SFE.BoardController = function (options) {
 		lights.topLight.position.set(tileSize * 4, 150, tileSize * 4);
 		lights.topLight.intensity = 1.0;
 
+		lights.whiteSideLight = new THREE.SpotLight();
+		lights.whiteSideLight.position.set(tileSize * 4, 100, tileSize * 4 + 500);
+		lights.whiteSideLight.intensity = 0.8;
+		lights.whiteSideLight.shadowCameraFov = 55;
+
+	    // black's side light
+		lights.blackSideLight = new THREE.SpotLight();
+		lights.blackSideLight.position.set(tileSize * 4, 100, tileSize * 4 - 500);
+		lights.blackSideLight.intensity = 0.8;
+		lights.blackSideLight.shadowCameraFov = 55;
+
+	    // light that will follow the camera position
+		lights.movingLight = new THREE.PointLight(0xf9edc9);
+		lights.movingLight.position.set(0, 10, 0);
+		lights.movingLight.intensity = 0.5;
+		lights.movingLight.distance = 500;
+        
 		scene.add(lights.topLight);
+		scene.add(lights.whiteSideLight);
+		scene.add(lights.blackSideLight);
+		scene.add(lights.movingLight);
+    
 	}
 
 	function initMaterials() {
