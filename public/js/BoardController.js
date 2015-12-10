@@ -27,10 +27,12 @@ SFE.BoardController = function (options) {
 
 	// Unit variables
 	var ranger, mage, warrior, gameboard, ground;
-	var selectedUnit;
+	var selectedUnit, notyourunit;
 
 	var containerEl = options.containerEl || null;
 	var assetsUrl = options.assetsUrl || '';
+	var audio;
+	var source;
 
 	this.drawBoard = function (callback) {
 		initEngine(); 											// initializes graphics renderer
@@ -43,6 +45,7 @@ SFE.BoardController = function (options) {
 		});
 		initGUIS();
 		initListeners();
+		initAudio();
 	};
 
 	this.addUnit = function (oonit) {
@@ -111,6 +114,12 @@ SFE.BoardController = function (options) {
 
 	    turnGUI.add(text, 'number').name("Currently Playing");
 	    turnGUI.add(text, 'endTurn').name("End Turn");
+
+	    for (i = 0; i < unitArray.length; i++) {
+	        unitArray[i].canAttack = true;
+	        unitArray[i].canMove = true;
+	    }
+
 	}
 
 	function initEngine() {
@@ -281,6 +290,16 @@ SFE.BoardController = function (options) {
 		domElement.addEventListener('mouseup', onMouseUp, false);
 	}
 
+	function initAudio() {
+	    console.log("initing Audio");
+	    audio = document.createElement('audio');
+	    source = document.createElement('source');
+	    source.src = "sounds/Forest-Chase.mp3";
+	    audio.appendChild(source);
+	    audio.play();
+        console.log("audio done")
+	}
+
 	function onAnimationFrame() {
 		requestAnimationFrame(onAnimationFrame);
 		//console.log(camera.getWorldDirection());
@@ -365,7 +384,7 @@ function onMouseDown(event) {
 		    if (selectedUnit.canAttack)
 		        calculateActions(worldToBoard(mouse3D), selectedUnit.validAttacks, "attack");
 
-            //if (selectedUnit.canMove)
+            if (selectedUnit.canMove)
                 calculateActions(worldToBoard(mouse3D), selectedUnit.validMoves, "move");
 
 	
@@ -373,21 +392,21 @@ function onMouseDown(event) {
 		    //console.log("Unit is selected");
 	        var tileSelected = worldToBoard(mouse3D); 				// Get the position of the tile the unit wants to go to
 	        if (board[tileSelected.x][tileSelected.z] === 0 && tileIsMovableTo(tileSelected)) { // if there is not a unit in the board at that position, and the tile is able to be moved to (based off the units available moves
-	            //if (selectedUnit.canMove) {
-	            var op = selectedUnit.position;
-	            var vp = boardToWorld(tileSelected); 							// get new coordinates for units position
-	            board[op.x][op.z].position.set(vp.x, vp.y, vp.z); 			// set units new position
-	            board[tileSelected.x][tileSelected.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
-	            board[op.x][op.z] = 0;
-	            selectedUnit.setPosition(tileSelected.x, tileSelected.z);
-	            selectedUnit.cantMove();
-	            //selectedUnit = 0;
-	            /*}
-		        else 
-                    console.log("Unit has already moved! ")*/
+	            if (selectedUnit.canMove) {
+	                var op = selectedUnit.position;
+	                var vp = boardToWorld(tileSelected); 							// get new coordinates for units position
+	                board[op.x][op.z].position.set(vp.x, vp.y, vp.z); 			// set units new position
+	                board[tileSelected.x][tileSelected.z] = board[op.x][op.z];	// set new board spot equal to the unit in the old board slot
+	                board[op.x][op.z] = 0;
+	                selectedUnit.setPosition(tileSelected.x, tileSelected.z);
+	                selectedUnit.cantMove();
+	                //selectedUnit = 0;
+	            }
+	            else 
+	                console.log("Unit has already moved! ")
 	        }
 	        if (board[tileSelected.x][tileSelected.z] !== 0 && tileisAttackable(tileSelected)) {
-	            //if (selectedUnit.canAttack) {
+	            if (selectedUnit.canAttack) {
 	                var enemy = findUnit(tileSelected);
 	                console.log("Enemy found belonging to " + enemy.pOwner + " with class " + enemy.unitClass);
 	                console.log("FIGHT!")
@@ -400,24 +419,17 @@ function onMouseDown(event) {
 	                    console.log("It's time for this unit to die.")
 	                    board[tileSelected.x][tileSelected.z] = 0;
 
-	                   /* //scene.remove(enemy.unitModel)
-	                    for (i = enemy.unitModel.position.y; i < 1000; i += 10) {
-	                        enemy.unitModel.position.y += i;
-	                        enemy.unitShadow.position.y += i;
-	                        onAnimationFrame();
-	                    }*/
 	                }
 	                if (selectedUnit.isDead) {
 	                    console.log("An ally has fallen while fighting")
 	                    var dedx = selectedUnit.position.x;
 	                    var dedz = selectedUnit.position.z;
 	                    board[dedx][dedz] = 0;
-	                    //selectedUnit.unitModel.position.y += 1000;
-	                    //selectedUnit.unitShadow.position.y += 1000;
+
 	                }
 
 	            }
-	        //}
+	        }
             console.log("wrapping up")
 		    resetTiles();
 		    selectedUnit = unitArray[10];
@@ -593,6 +605,10 @@ function onMouseDown(event) {
 	}
 	
 	function setSelectedUnit(boardPos) {
+	    if (notyourunit != undefined) {
+	        notyourunit = undefined;
+	        unitGUI.destroy();
+	    }
 	    for (var i = 0; i < unitArray.length; i++) {
 	        console.log("unitArray.pOwner: " + unitArray[i].pOwner)
 			if (boardPos.x === unitArray[i].position.x && boardPos.z === unitArray[i].position.z) {
@@ -607,7 +623,7 @@ function onMouseDown(event) {
 			        return true;
 			    }
 			    else {
-			        var notyourunit = unitArray[i];
+			        notyourunit = unitArray[i];
                     spawnUnitGUI(notyourunit)
                     console.log("Not current player's unit")
 			    }
