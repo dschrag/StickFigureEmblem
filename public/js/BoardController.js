@@ -314,6 +314,7 @@ SFE.BoardController = function (options) {
 
 		domElement.addEventListener('mousedown', onMouseDown, false);
 		domElement.addEventListener('mouseup', onMouseUp, false);
+		domElement.addEventListener('mouseHover', onMouseHover, false);
 	}
 
 	function initAudio() {
@@ -345,11 +346,22 @@ SFE.BoardController = function (options) {
 	    else
 	        counter++;
 	}
+	
+	function sendScore(name, score) {
+		var xmlHttp = new XMLHttpRequest();
+		var scoreURL = "/save_score?name=" + name + "&score=" + score;
+   		xmlHttp.open( "GET", scoreURL, false ); // false for synchronous request
+    	xmlHttp.send( null );
+    	return xmlHttp.responseText;
+	}
 
 	function checkWinningState() {
 	    if (Player1.numUnits == 0) {
 	        Player2.winner = true;
-	        alert("Player 2 Wins! Please refresh the page");
+			var name = "Player2";
+			var score = "20";
+			
+	        alert(sendScore(name, score));
 	    }
 	    else if (Player2.numUnits == 0) {
 	        Player1.winner = true;
@@ -476,6 +488,7 @@ function onMouseDown(event) {
 	                    else {
 	                        Player2.killUnit();
 	                    }
+						 checkWinningState();
 	                }
 	                if (selectedUnit.isDead) {
 	                    console.log("An ally has fallen while fighting")
@@ -496,7 +509,7 @@ function onMouseDown(event) {
             console.log("wrapping up")
 		    resetTiles();
 		    selectedUnit = unitArray[10];
-		    checkWinningState();
+		   
 		    if (unitGUI != undefined) {
                 console.log("gonna destroy the gui")
                 unitGUI.destroy();

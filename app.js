@@ -34,8 +34,6 @@ cloudant.db.list(function(err, allDbs) {
 
 var dbsfe = cloudant.use('sfe_scores');
 
-var url = 'https://64a24f2c-69f0-40f4-bd9c-04d6488fbaba-bluemix.cloudant.com/dashboard.html#database/sfe_scores/_design/top_scores/_view/top_scores?limit=10&descending=true';
-
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() {
 
@@ -48,11 +46,35 @@ app.get('/hiscores', function(request, response) {
 		response.send(details); 
   }
   
- 
-  var docs = dbsfe.list(function(err, response) {
+ var query = {
+  "selector": {
+    "score": {
+      "$gt": 0
+    }
+  },
+  "fields": [
+    "name",
+    "score"
+  ],
+  "limit": 10,
+  "sort": [
+    {
+      "score": "desc"
+    }
+  ]
+};
+
+  var docs = dbsfe.find(query, function(err, response) {
 	 var details = "";
-	 numrows = response.total_rows;
-	 //console.log(numrows);
+	 /*console.log("=============")
+	 console.log(response);
+	 console.log("=============")
+*/
+
+	var data = response.docs;
+	//console.log(data);
+	numrows = data.length;
+	//console.log(numrows);
 	 
 	 function catcatDetails(details, name, score) {
 		var tblrowopen = "<tr>";
@@ -75,22 +97,18 @@ app.get('/hiscores', function(request, response) {
 	 j = 0;
 	 for (var i = 0; i < numrows; i++) {
 		//console.log(i);
-		dbsfe.get(response.rows[i].id, function(err, doc) {
-			j++;
-			if (!(typeof doc.name === 'undefined')) {
-				var n = JSON.stringify(doc.name);
-				var s = JSON.stringify(doc.score);
-				details = catcatDetails(details, n, s);
-			} else {
-				//console.log("undefined!");
-				return;
-			}
-			
-			if (j == numrows) {
-				console.log(details);
-				sendDetails(details);
-			}
-		});
+		  j++;
+		  
+		
+		  var n = JSON.stringify(data[i].name);
+		  var s = JSON.stringify(data[i].score);
+		  //console.log("name " + n + " score " + s);
+		  details = catcatDetails(details, n, s);
+		  //console.log("details: " + details);
+		  if (j == numrows) {
+			//  console.log(details);
+			  sendDetails(details);
+		  }
 	 }
 	 
   });

@@ -3,13 +3,40 @@
 <head>
 	<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/	bootstrap.min.js"></script>
-  <style>
-  .peopleCarouselImg img {
-  	width: auto;
-  	height: 225px;
-  	max-height: 225px;
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+	function getScores() {
+		var xmlHttp = new XMLHttpRequest();
+   		xmlHttp.open( "GET", "/hiscores", false ); // false for synchronous request
+    	xmlHttp.send( null );
+    	return xmlHttp.responseText;
 	}
+	
+	function showScores() {
+			document.write(getScores());
+	}
+</script>
+
+  <style>
+  .btn.outline {
+    background: none;
+    padding: 12px 22px;
+}
+.btn-primary.outline {
+    border: 2px solid #FFF;
+    color: #FFF;
+}
+.btn-primary.outline:hover, .btn-primary.outline:focus, .btn-primary.outline:active, .btn-primary.outline.active, .open > .dropdown-toggle.btn-primary {
+    color:#FF0;
+    border-color: #FF0;
+}
+.btn-primary.outline:active, .btn-primary.outline.active {
+    border-color: #FF0;
+    color: #FF0;
+    box-shadow: none;
+}
+
+
   </style>
 </head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -30,21 +57,45 @@
     <div class="item active">
     <img src="models/PlayGamePage.jpg" />
       <div class="carousel-caption">
-        <h3><img src="models/StickFigureEmblemLogo.fw.png" alt="Stick Figure Emblem" /></h3>
-         <a href="game.html">
-         <button type="button" class="btn btn-secondary">Play Game</button>
-      </a>      </div>
-    </div>
-    <div class="item">
-      <img src="http://placehold.it/1200x315" alt="...">
-      <div class="carousel-caption">
-          <h3>Caption Text</h3>
+        <h3><img class="logo" src="models/StickFigureEmblemLogo.fw.png" alt="Stick Figure Emblem"  /></h3>
+        <p>In a world...<br />
+        Where everyone is a stick figure,<br />
+        There is only one distinction.<br />
+        <font color="RED">Red</font> vs. <font color="BLUE">Blue. </font><br />
+        Use your warrior, mage, and ranger and take out your opponent's units before they take yours.<br />
+        Get scored based off how well you win.<br />
+        </p>
+        <h4 align="center"><a href="game.html">
+         <button type="button" class="btn btn-primary btn-lg outline">Play Game</button>
+      </a></h4>
       </div>
     </div>
     <div class="item">
-      <img src="http://placehold.it/1200x315" alt="...">
+     <img src="models/PlayGamePage.jpg" />
       <div class="carousel-caption">
-          <h3>Caption Text</h3>
+          <h3>High Scores</h3>
+      		<div class="table-condensed" style="width:50%; margin: 0 auto">
+                <table align="center" class="table">
+            		<thead>
+                		<th class="name" style="text-align:left">Name</th><th class="score" style="text-align:right">Score</th>
+              		</thead>
+              		<tr>
+					  <script>showScores();</script>
+                     </tr>
+                      
+           </table>
+           </div>
+      </div>
+    </div>
+    <div class="item">
+     <img src="models/PlayGamePage.jpg" />
+      <div class="carousel-caption">
+          <h3>Credits</h3>
+          <p>Stick Figure Emblem is the final project of Derek Schrag and Daniel Miller for CS 252, Fall 2015</p>
+          <p>Stick Figure Emblem, as the name implies, is based off of the popular Nintendo series, Fire Emblem.</p>
+          <P>Special thanks to <a href="https://dmuenter.weebly.com">Dana Muenter</a> for our stick figure models.</P>
+          <p>Music written by Eric Matyas, from <a href="https://soundimage.org">Sound Image</a></p>
+          <p>Stick Figure Emblem is hosted on IBM Bluemix. The server is written in Node.js. The webpage uses Bootstrap. The game engine was written in Three.js. The scores database is hosted on the NoSQL-based CloudantDB.</p>
       </div>
     </div>
   </div>
