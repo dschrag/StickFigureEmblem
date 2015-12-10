@@ -55,7 +55,44 @@ function Player (number)
 
     this.caclulateScore = function ()
     {
+        var unitsAlive = 0;
+        var unitsKilled = 0; 
+        var otherPlayer; 
+        if (Player1.playerNum == this.playerNum){
+            otherPlayer = Player2; 
+        }
+        else {
+            otherPlayer = Player1;
+        }
 
+        for (i = 0; i < unitArray.length; i++) {
+            var unit = unitArray[i];
+            if (unit.pOwner == this.playerNum) {
+                if (!unit.isDead) {
+                    unitsAlive++;
+                }
+            }
+            
+            if (unit.pOwner == otherPlayer.playerNum) {
+                if (unit.isDead) {
+                    unitsKilled++;
+                }
+            }
+            
+        }
+
+        if (turnsElapsed < 15) {
+            this.score += (2*(15-turnsElapsed))
+        }
+
+        this.score += unitsKilled * 10;
+
+        this.score += (3 + 3 * Math.pow(unitsAlive, 2));
+
+        if (this.winner)
+        {
+            this.score += 100;
+        }
     }
     this.sendScore = function()
     {

@@ -4,7 +4,7 @@ var Player1 = new Player(1);
 var Player2 = new Player(2);
 var currentPlayer; 
 var unitGUI, turnGUI;
-
+var turnsElapsed = 0;
 SFE.BoardController = function (options) {
 	'use strict';
 
@@ -24,15 +24,17 @@ SFE.BoardController = function (options) {
 	var board = [];
 	var tiles = [];
 
-
 	// Unit variables
 	var ranger, mage, warrior, gameboard, ground;
 	var selectedUnit, notyourunit;
 
 	var containerEl = options.containerEl || null;
 	var assetsUrl = options.assetsUrl || '';
+
+    // audio stuff
 	var audio;
 	var source;
+	var counter = 0;
 
 	this.drawBoard = function (callback) {
 		initEngine(); 											// initializes graphics renderer
@@ -101,6 +103,7 @@ SFE.BoardController = function (options) {
 	}
 
 	function endTurn() {
+	    turnsElapsed++;
 	    if (currentPlayer == Player1) {
 	        currentPlayer = Player2;
 	    }
@@ -328,8 +331,19 @@ SFE.BoardController = function (options) {
 		//console.log(camera.getWorldDirection());
 		cameraController.update();
 		renderer.render(scene, camera);
+		checkAudio();
 		floatDeadUnit();
-		checkWinningState();
+		//checkWinningState();
+	}
+
+	function checkAudio() {
+        //console.log("checking audio counter: " + counter)
+	    if (counter > 5500) {
+	        counter = 0;
+	        audio.play();
+	    }
+	    else
+	        counter++;
 	}
 
 	function checkWinningState() {
@@ -449,7 +463,7 @@ function onMouseDown(event) {
 	                console.log("Enemy found belonging to " + enemy.pOwner + " with class " + enemy.unitClass);
 	                console.log("FIGHT!")
 	                selectedUnit.combat(selectedUnit, enemy, true);
-	                //selectedUnit.cantAttack();
+	                selectedUnit.cantAttack();
 	                console.log("Done fighting")
 	                console.log("Enemy health: " + enemy.health);
 	                console.log("Ally health: " + selectedUnit.health);
@@ -482,6 +496,7 @@ function onMouseDown(event) {
             console.log("wrapping up")
 		    resetTiles();
 		    selectedUnit = unitArray[10];
+		    checkWinningState();
 		    if (unitGUI != undefined) {
                 console.log("gonna destroy the gui")
                 unitGUI.destroy();
