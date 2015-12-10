@@ -314,7 +314,7 @@ SFE.BoardController = function (options) {
 
 		domElement.addEventListener('mousedown', onMouseDown, false);
 		domElement.addEventListener('mouseup', onMouseUp, false);
-		domElement.addEventListener('mouseHover', onMouseHover, false);
+		//domElement.addEventListener('mouseHover', onMouseHover, false);
 	}
 
 	function initAudio() {
@@ -339,7 +339,7 @@ SFE.BoardController = function (options) {
 
 	function checkAudio() {
         //console.log("checking audio counter: " + counter)
-	    if (counter > 5500) {
+	    if (counter > 5800) {
 	        counter = 0;
 	        audio.play();
 	    }
@@ -365,7 +365,11 @@ SFE.BoardController = function (options) {
 	    }
 	    else if (Player2.numUnits == 0) {
 	        Player1.winner = true;
-	        alert("Player 1 Wins! Please refresh the page");
+	        var name = "Player1";
+	        var score = "20";
+
+	        alert(sendScore(name, score));
+	       // alert("Player 1 Wins! Please refresh the page");
 	    }
 	    else {
             // no winners yet; 
@@ -482,7 +486,7 @@ function onMouseDown(event) {
 	                if (enemy.isDead) {
 	                    console.log("It's time for this unit to die.")
 	                    board[tileSelected.x][tileSelected.z] = 0;
-	                    if (enemey.pOwner == 1) {
+	                    if (enemy.pOwner == 1) {
 	                        Player1.killUnit();
 	                    }
 	                    else {

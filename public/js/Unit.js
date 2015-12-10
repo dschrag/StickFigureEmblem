@@ -49,14 +49,14 @@ function Unit(unitClass) {
     else if (unitClass == "ranger" || unitClass == "Ranger") {
         // Ranger specific attributes
 
-        this.health = 125 // weakest health. 
+        this.health = 130 // weakest health. 
 
     }
     else {
         // not sure what to do here. 
         console.error("unitClass was not a defined class.");
     }
-    this.baseDamage = 45 // may change to differ with classes classes. 
+    this.baseDamage = 42 // may change to differ with classes classes. 
     this.criticalDamage = this.baseDamage * 1.5; // start off with 1.5 damage modifier for crit damage
 
     this.setShadow = function (shadow) {

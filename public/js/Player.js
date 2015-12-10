@@ -33,7 +33,8 @@ function Player (number)
     this.score = 0;
     this.winner = false 
 
-    this.killUnit = function (){
+    this.killUnit = function () {
+        console.log("Killing unit from " + this.playerNum)
         this.numUnits--;
     }
 
