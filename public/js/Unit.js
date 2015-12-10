@@ -123,47 +123,15 @@ function Unit(unitClass) {
     {
         if (this.unitClass == "ranger" || this.unitClass == "Ranger")
         {
-            this.validAttacks = new Array;
-            for (x = 2; x < 6; x++) {
-                var tempPos = { x: 0, z: 0 };
-                var tempNeg = { x: -1, z: 0 };
-                tempPos.x = x;
-                tempNeg.x = -1 * x;
-                this.validAttacks.push(tempPos);
-                this.validAttacks.push(tempNeg);
-            }
-            for (z = 2; z < 6; z++) {
-                var tempPos = { x: 0, z: 0 };
-                var tempNeg = { x: -1, z: 0 };
-                tempPos.z = z;
-                tempNeg.z = -1 * z;
-                this.validAttacks.push(tempPos);
-                this.validAttacks.push(tempNeg);
-            }
 
-            for (i = 2; i < 6; i++) {
-                var tempPos = { x: 0, z: 0 };
-                var tempNeg = { x: -1, z: -1 };
-                var tempNegX = { x: -1, z: 0 };
-                var tempNegZ = { x: 0, z: -1 };
-
-                tempPos.x = i;
-                tempPos.z = i;
-                this.validAttacks.push(tempPos);
-
-                tempNeg.x = i * -1;
-                tempNeg.z = i * -1;
-                this.validAttacks.push(tempNeg);
-
-                tempNegX.x = -1 *i;
-                tempNegX.z = i;
-                this.validAttacks.push(tempNegX);
-
-                tempNegZ.x = i;
-                tempNegZ.z = i* -1;
-                this.validAttacks.push(tempNegZ);
-
-            }
+            this.validAttacks = [{ x: -5, z: 0 }, { x: -4, z: 0 }, { x: -3, z: 0 }, { x: -2, z: 0 },
+                { x: 5, z: 0 }, { x: 4, z: 0 }, { x: 3, z: 0 }, { x: 2, z: 0 },
+                { x: 0, z: -5 }, { x: 0, z: -4 }, { x: 0, z: -3 }, { x: 0, z: -2 },
+                { x: 0, z: 5 }, { x: 0, z: 4 }, { x: 0, z: 3 }, { x: 0, z: 2 },
+                { x: 4, z: 4 }, { x: 3, z: 3 }, { x: 2, z: 2 },
+                { x: -4, z: 4 }, { x: -3, z: 3 }, { x: -2, z: 2 },
+                { x: 4, z: -4 }, { x: 3, z: -3 }, { x: 2, z: -2 },
+                { x: -4, z: -4 }, { x: -3, z: -3 }, { x: -2, z: -2 }, ]
         }
 
         if (this.unitClass == "warrior" || this.unitClass == "Warrior")

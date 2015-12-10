@@ -125,6 +125,7 @@ SFE.BoardController = function (options) {
 	    turnGUI.add(text, 'number').name("Currently Playing");
 	    turnGUI.add(text, 'endTurn').name("End Turn");
 
+	    var i = 0;
 	    for (i = 0; i < unitArray.length; i++) {
 	        unitArray[i].canAttack = true;
 	        unitArray[i].canMove = true;
@@ -315,11 +316,6 @@ SFE.BoardController = function (options) {
 			checkLoad();
 		});
 
-		/*ground = new THREE.Mesh(new THREE.PlaneGeometry(100, 100, 1, 1), materials.ground);
-		ground.position.set(tileSize * 4, -1.52, tileSize * 4);
-		ground.rotation.x = -90 * Math.PI / 180;
-		scene.add(ground);
-*/
 		var tileMaterial = materials.darkgrass;
 
 		for (var i = 0; i < boardLength; i++) {
@@ -716,6 +712,7 @@ function onMouseDown(event) {
 }
 	function findUnit(position) {
 	    var unit = undefined;
+	    var i = 0;
 	    for (i = 0; i < unitArray.length; i++) {
 	        console.log(position.x);
 	        console.log(position.z);
