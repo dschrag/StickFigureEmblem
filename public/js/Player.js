@@ -26,10 +26,16 @@ function Player (number)
             this.playerName = name;
         
     }
+
+    this.numUnits = 3; 
+
     this.playerNum = number;
     this.score = 0;
-    this.unitArray = new Array;
     this.winner = false 
+
+    this.killUnit = function (){
+        this.numUnits--;
+    }
 
     this.addUnits = function (unit)
     {

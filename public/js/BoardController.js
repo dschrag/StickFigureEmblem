@@ -46,6 +46,8 @@ SFE.BoardController = function (options) {
 		initGUIS();
 		initListeners();
 		initAudio();
+
+		alert("Let the games begin!");
 	};
 
 	this.addUnit = function (oonit) {
@@ -327,6 +329,21 @@ SFE.BoardController = function (options) {
 		cameraController.update();
 		renderer.render(scene, camera);
 		floatDeadUnit();
+		checkWinningState();
+	}
+
+	function checkWinningState() {
+	    if (Player1.numUnits == 0) {
+	        Player2.winner = true;
+	        alert("Player 2 Wins! Please refresh the page");
+	    }
+	    else if (Player2.numUnits == 0) {
+	        Player1.winner = true;
+	        alert("Player 1 Wins! Please refresh the page");
+	    }
+	    else {
+            // no winners yet; 
+	    }
 	}
 
 	function boardToWorld(pos) {
@@ -439,7 +456,12 @@ function onMouseDown(event) {
 	                if (enemy.isDead) {
 	                    console.log("It's time for this unit to die.")
 	                    board[tileSelected.x][tileSelected.z] = 0;
-
+	                    if (enemey.pOwner == 1) {
+	                        Player1.killUnit();
+	                    }
+	                    else {
+	                        Player2.killUnit();
+	                    }
 	                }
 	                if (selectedUnit.isDead) {
 	                    console.log("An ally has fallen while fighting")
@@ -447,6 +469,12 @@ function onMouseDown(event) {
 	                    var dedz = selectedUnit.position.z;
 	                    board[dedx][dedz] = 0;
 
+	                    if (selectedUnit.pOwner == 1) {
+	                        Player1.killUnit();
+	                    }
+	                    else {
+	                        Player2.killUnit();
+	                    }
 	                }
 
 	            }
