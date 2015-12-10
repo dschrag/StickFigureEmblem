@@ -391,22 +391,16 @@ SFE.BoardController = function (options) {
 	function checkWinningState() {
 	    if (Player1.numUnits == 0) {
 	        Player2.winner = true;
-			var name = "Player2";
-			var score = "20";
-			
-	        alert(sendScore(name, score));
-	    }
+			sendToCombatLog("This game's winner is: Player 2!");
+			sendScore("Faker", 2000);	    
+		}
 	    else if (Player2.numUnits == 0) {
 	        Player1.winner = true;
-	        var name = "Player1";
-	        var score = "20";
-
-	        alert(sendScore(name, score));
-	       // alert("Player 1 Wins! Please refresh the page");
+			sendToCombatLog("This game's winner is: Player 1!");
+	     	sendScore("Ryu", 2000);
+		   // alert("Player 1 Wins! Please refresh the page");
 	    }
-	    else {
-            // no winners yet; 
-	    }
+		
 	}
 
 	function boardToWorld(pos) {

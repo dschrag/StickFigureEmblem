@@ -222,7 +222,7 @@ function Unit(unitClass) {
         if (counter === true) {
             console.log("beginning counter attack.")
             console.log("Defender hp: " + defender.health)
-            if (defender.health > 0) {
+            if ((defender.health > 0) && defender.canReachTile(attacker.position)) {
                 defender.combat(defender, attacker, false);
             }
             else {
@@ -238,6 +238,16 @@ function Unit(unitClass) {
         // we're done.
         return;
     }
+	
+	this.canReachTile = function(tile) {
+		for (var i = 0; i < this.validAttacks.length; i++) {
+			console.log("Checking if unit can counter attack");
+			if (((this.position.x + this.validAttacks[i].x) === tile.x) && ((this.position.z + this.validAttacks[i].z) === tile.z)) {
+				console.log(this.unitClass + " can counter attack!");
+				return true;	
+			}
+		}
+	}
 
     this.destroyUnit = function () {
         // function that will remove the unit from the board. 

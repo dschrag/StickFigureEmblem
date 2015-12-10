@@ -118,11 +118,13 @@ app.get('/hiscores', function(request, response) {
 app.get('/save_score', function(request, response) {
   var name = request.query.name;
   var score = request.query.score;
+  console.log("Trying to send: " + request);
 
   var scoreRecord = { 'name': name, 'score' : parseInt(score), 'date': new Date() };
   dbsfe.insert(scoreRecord, function(err, body, header) {
     if (!err) {       
       response.send('Successfully added one score to the DB');
+	  console.log("Successfully sent");
     }
   });
 });
