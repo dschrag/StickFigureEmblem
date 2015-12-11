@@ -399,7 +399,11 @@ SFE.BoardController = function (options) {
 	        console.log("Player2 score:");
 	        console.log(Player2.score);
 	        var finalScore = Player2.score;
-	        sendScore("Grr", finalScore);
+	        
+		var name = prompt("Congrats Player2! Please enter your name", "Grr");		
+		console.log("name passed in");
+		console.log(name);
+		sendScore(name, finalScore);
             //console.log("done w/ GRR")
 		}
 	    else if (Player2.numUnits == 0) {
@@ -410,9 +414,12 @@ SFE.BoardController = function (options) {
 	        console.log("Player1 score:");
 	        console.log(Player1.score);
 	        var finalScore = Player1.score;
-	        sendScore("Seh", finalScore);
-            //console.log("done w/ SEH")
-		   // alert("Player 1 Wins! Please refresh the page");
+	        var name = prompt("Congrats Player1! Please enter your name", "Seh");
+		console.log("name passed in");
+		console.log(name);
+		sendScore(name, finalScore);
+            	//console.log("done w/ SEH")
+		// alert("Player 1 Wins! Please refresh the page");
 	    }
 		
 	}
