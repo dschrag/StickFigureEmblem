@@ -403,7 +403,7 @@ SFE.BoardController = function (options) {
 		var name = prompt("Congrats Player2! Please enter your name", "Grr");		
 		console.log("name passed in");
 		console.log(name);
-		sendScore(name", finalScore);
+		sendScore(name, finalScore);
             //console.log("done w/ GRR")
 		}
 	    else if (Player2.numUnits == 0) {
